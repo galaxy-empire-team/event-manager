@@ -1,0 +1,28 @@
+version: "2"
+run:
+  concurrency: 4
+linters:
+  default: all
+  disable:
+    - depguard
+    - varnamelen
+    - err113
+    - exhaustruct
+    - gocritic
+    - nlreturn
+    - wsl
+    - tagliatelle
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+    tagalign:
+      sort: false
+formatters:
+  enable:
+    - gofmt
+    - goimports
