@@ -15,11 +15,11 @@ func (r *BuildingStorage) UpgradeBuilding(ctx context.Context, building models.B
 				b1.id AS new_id
             FROM session_beta.planet_buildings pb
             JOIN session_beta.buildings b ON pb.building_id = b.id
-            JOIN session_beta.buildings b1 ON b.level + 1 = b1.level
+            JOIN session_beta.buildings b1 ON b.level + 1 = b1.level AND b.building_type = b1.building_type
 			WHERE
 			    pb.planet_id = $1
 			AND
-			    b.type = $2
+			    b.building_type = $2
 		)
 		UPDATE
 			session_beta.planet_buildings pb
