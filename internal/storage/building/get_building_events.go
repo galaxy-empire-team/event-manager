@@ -7,8 +7,8 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *BuildingStorage) GetBuildingEvents(ctx context.Context) ([]models.BuildEvent, error) {
-	const createCapitolQuery = `
+func (r *BuildingStorage) GetBuildEvents(ctx context.Context) ([]models.BuildEvent, error) {
+	const getBuildEventsQuery = `
 		SELECT
 			id,
 			planet_id,
@@ -22,7 +22,7 @@ func (r *BuildingStorage) GetBuildingEvents(ctx context.Context) ([]models.Build
 		FOR UPDATE SKIP LOCKED;
 	`
 
-	rows, err := r.DB.Query(ctx, createCapitolQuery)
+	rows, err := r.DB.Query(ctx, getBuildEventsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("r.DB.Query(): %w", err)
 	}
@@ -36,7 +36,7 @@ func (r *BuildingStorage) GetBuildingEvents(ctx context.Context) ([]models.Build
 			&be.ID,
 			&be.PlanetID,
 			&be.BuildType,
-			&be.StartdAt,
+			&be.StartedAt,
 			&be.FinishedAt,
 		)
 		if err != nil {

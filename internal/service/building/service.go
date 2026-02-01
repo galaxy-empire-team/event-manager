@@ -1,4 +1,4 @@
-package planet
+package building
 
 import (
 	"context"
@@ -8,18 +8,12 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-const (
-	galaxyCount          = 1
-	systemInGalaxyCount  = 3
-	planetsInSystemCount = 16
-
-	defaultLvl = 0
-)
-
 type BuildingStorage interface {
-	GetBuildingEvents(ctx context.Context) ([]models.BuildEvent, error)
-	UpgradeBuilding(ctx context.Context, building models.BuildEvent) error
-	DeleteBuildingEvent(ctx context.Context, event models.BuildEvent) error
+	GetBuildEvents(ctx context.Context) ([]models.BuildEvent, error)
+	DeleteBuildEvents(ctx context.Context, events []models.BuildEvent) error
+	GetCurrentBuilding(ctx context.Context, building models.BuildEvent) (models.PlanetBuilding, error)
+	CreateBuilding(ctx context.Context, building models.PlanetBuilding) error
+	UpgradeBuildingLevel(ctx context.Context, building models.PlanetBuilding) error
 }
 
 type txManager interface {
@@ -28,8 +22,7 @@ type txManager interface {
 
 type Service struct {
 	txManager txManager
-
-	logger *zap.Logger
+	logger    *zap.Logger
 }
 
 func New(txManager txManager, logger *zap.Logger) *Service {

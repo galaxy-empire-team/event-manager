@@ -9,6 +9,7 @@ import (
 
 	"github.com/galaxy-empire-team/event-manager/internal/db"
 	buildingservice "github.com/galaxy-empire-team/event-manager/internal/service/building"
+	missionservice "github.com/galaxy-empire-team/event-manager/internal/service/mission"
 )
 
 type TxManager struct {
@@ -24,6 +25,17 @@ func New(connPool *db.ConnPool) *TxManager {
 func (m *TxManager) ExecBuildingTx(
 	ctx context.Context,
 	handler func(ctx context.Context, storages buildingservice.BuildingStorage) error,
+) error {
+	return m.exec(ctx, func(tx pgx.Tx) error {
+		return handler(ctx, newStorageSet(tx))
+	})
+}
+
+// ExecMissionTx implemets methods required by mission service. I decided to copy func for each service
+// insted of making factories or use empty interfaces.
+func (m *TxManager) ExecMissionTx(
+	ctx context.Context,
+	handler func(ctx context.Context, storages missionservice.MissionStorage) error,
 ) error {
 	return m.exec(ctx, func(tx pgx.Tx) error {
 		return handler(ctx, newStorageSet(tx))

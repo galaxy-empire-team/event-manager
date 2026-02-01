@@ -27,7 +27,7 @@ func New(cfg config.App) (context.Context, *App, error) {
 
 	go func() {
 		<-ctx.Done()
-		logger.Sync() // nolint:errcheck
+		logger.Sync() //nolint:errcheck,gosec
 	}()
 
 	return ctx, &App{

@@ -11,6 +11,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/config"
 	"github.com/galaxy-empire-team/event-manager/internal/db"
 	buildingservice "github.com/galaxy-empire-team/event-manager/internal/service/building"
+	missionservice "github.com/galaxy-empire-team/event-manager/internal/service/mission"
 	"github.com/galaxy-empire-team/event-manager/internal/storage/txmanager"
 )
 
@@ -31,27 +32,34 @@ func run() error {
 		return fmt.Errorf("app.New(): %w", err)
 	}
 
-	// initialize pgx infra
+	// initialize pgx infra.
 	db, err := db.New(ctx, cfg.PgConn)
 	if err != nil {
 		return fmt.Errorf("db.New(): %w", err)
 	}
 	defer db.Close()
 
-	// initialize manager that implemets storage methods inside transactions
+	// initialize manager that implemets storage methods inside transactions.
 	txManager := txmanager.New(db)
 
-	// initialize services
+	// initialize services. Use other binaries for other services as needed.
 	buildingService := buildingservice.New(txManager, app.ComponentLogger("buildingservice"))
+	missionService := missionservice.New(txManager, app.ComponentLogger("missionservice"))
 
 	cron := cron.New()
 
-	cron.AddFunc("@every 1s", func() {
-		err := buildingService.UpdateBuildings(ctx)
-		if err != nil {
-			app.Logger().Error("buildingService.UpdateBuildings(): %w", zap.Error(err))
+	_, err = cron.AddFunc("@every 1s", func() {
+		if err := buildingService.HandleBuilds(ctx); err != nil {
+			app.Logger().Error("failed to update buildings", zap.Error(err))
+		}
+
+		if err := missionService.HandleMissions(ctx); err != nil {
+			app.Logger().Error("failed to handle missions", zap.Error(err))
 		}
 	})
+	if err != nil {
+		return fmt.Errorf("cron.AddFunc(): %w", err)
+	}
 
 	cron.Start()
 	defer cron.Stop()
