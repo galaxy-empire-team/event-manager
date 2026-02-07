@@ -7,6 +7,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 
+	"github.com/galaxy-empire-team/bridge-api/pkg/registry"
 	"github.com/galaxy-empire-team/event-manager/internal/app"
 	"github.com/galaxy-empire-team/event-manager/internal/config"
 	"github.com/galaxy-empire-team/event-manager/internal/db"
@@ -41,9 +42,13 @@ func run() error {
 
 	// initialize manager that implemets storage methods inside transactions.
 	txManager := txmanager.New(db)
+	reg, err := registry.New(ctx, db.Pool)
+	if err != nil {
+		return fmt.Errorf("registry.New(): %w", err)
+	}
 
 	// initialize services. Use other binaries for other services as needed.
-	buildingService := buildingservice.New(txManager, app.ComponentLogger("buildingservice"))
+	buildingService := buildingservice.New(txManager, reg, app.ComponentLogger("buildingservice"))
 	missionService := missionservice.New(txManager, app.ComponentLogger("missionservice"))
 
 	cron := cron.New()

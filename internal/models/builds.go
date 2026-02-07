@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
+	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 )
 
 type BuildType string
@@ -11,14 +13,13 @@ type BuildType string
 type BuildEvent struct {
 	ID         uint64
 	PlanetID   uuid.UUID
-	BuildType  BuildType
+	BuildingID consts.BuildingID
 	StartedAt  time.Time
 	FinishedAt time.Time
 }
 
-type PlanetBuilding struct {
-	ID        uint64
-	PlanetID  uuid.UUID
-	BuildType BuildType
-	Level     uint8
+type BuildingUpgrade struct {
+	PlanetID          uuid.UUID
+	CurrentBuildingID consts.BuildingID
+	UpdatedBuildingID consts.BuildingID
 }

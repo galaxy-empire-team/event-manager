@@ -2,11 +2,11 @@ package building
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"go.uber.org/zap"
 
+	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
@@ -16,7 +16,7 @@ func (s *Service) HandleBuilds(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("buildingStorage.GetBuildEvents(): %w", err)
 		}
-		
+
 		s.logger.Info("Fetched building events", zap.Int("count", len(buildEvents)))
 
 		if len(buildEvents) == 0 {
@@ -24,31 +24,20 @@ func (s *Service) HandleBuilds(ctx context.Context) error {
 		}
 
 		for _, buildEvent := range buildEvents {
-			upgradedBuilding, err := buildingStorage.GetCurrentBuilding(ctx, buildEvent)
+			nextLvlBuilding, err := s.registry.GetBuildingNextLvlStats(consts.BuildingID(buildEvent.BuildingID))
 			if err != nil {
-				if !errors.Is(err, models.ErrBuildingNotFound) {
-					return fmt.Errorf("buildingStorage.GetCurrentBuilding(): %w", err)
-				}
-
-				upgradedBuilding = models.PlanetBuilding{
-					PlanetID:  buildEvent.PlanetID,
-					BuildType: buildEvent.BuildType,
-					Level:     0,
-				}
-
-				err = buildingStorage.CreateBuilding(ctx, upgradedBuilding)
-				if err != nil {
-					return fmt.Errorf("buildingStorage.CreateBuilding(): %w", err)
-				}
-
-				continue
+				return fmt.Errorf("s.registry.GetNextLevelBuildingID(): %w", err)
 			}
 
-			upgradedBuilding.Level++
+			updatedBuilding := models.BuildingUpgrade{
+				PlanetID:          buildEvent.PlanetID,
+				CurrentBuildingID: buildEvent.BuildingID,
+				UpdatedBuildingID: nextLvlBuilding.ID,
+			}
 
-			err = buildingStorage.UpgradeBuildingLevel(ctx, upgradedBuilding)
+			err = buildingStorage.SetBuildingID(ctx, updatedBuilding)
 			if err != nil {
-				return fmt.Errorf("buildingStorage.UpgradeBuildingLevel(): %w", err)
+				return fmt.Errorf("buildingStorage.SetBuildingID(): %w", err)
 			}
 		}
 

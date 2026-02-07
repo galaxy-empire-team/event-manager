@@ -17,7 +17,7 @@ func (s *Service) HandleMissions(ctx context.Context) error {
 		}
 
 		s.logger.Info("Fetched mission events", zap.Int("count", len(missionEvents)))
-		
+
 		if len(missionEvents) == 0 {
 			return nil
 		}

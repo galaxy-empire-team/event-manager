@@ -12,7 +12,7 @@ func (r *BuildingStorage) GetBuildEvents(ctx context.Context) ([]models.BuildEve
 		SELECT
 			id,
 			planet_id,
-			build_type,
+			building_id,
 			started_at,
 			finished_at
 		FROM
@@ -35,7 +35,7 @@ func (r *BuildingStorage) GetBuildEvents(ctx context.Context) ([]models.BuildEve
 		err = rows.Scan(
 			&be.ID,
 			&be.PlanetID,
-			&be.BuildType,
+			&be.BuildingID,
 			&be.StartedAt,
 			&be.FinishedAt,
 		)
