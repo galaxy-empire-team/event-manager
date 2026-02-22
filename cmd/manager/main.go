@@ -42,6 +42,7 @@ func run() error {
 
 	// initialize manager that implemets storage methods inside transactions.
 	txManager := txmanager.New(db)
+	
 	reg, err := registry.New(ctx, db.Pool)
 	if err != nil {
 		return fmt.Errorf("registry.New(): %w", err)
@@ -49,7 +50,7 @@ func run() error {
 
 	// initialize services. Use other binaries for other services as needed.
 	buildingService := buildingservice.New(txManager, reg, app.ComponentLogger("buildingservice"))
-	missionService := missionservice.New(txManager, app.ComponentLogger("missionservice"))
+	missionService := missionservice.New(txManager, reg, app.ComponentLogger("missionservice"))
 
 	cron := cron.New()
 

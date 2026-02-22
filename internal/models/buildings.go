@@ -8,8 +8,6 @@ import (
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 )
 
-type BuildType string
-
 type BuildEvent struct {
 	ID         uint64
 	PlanetID   uuid.UUID

@@ -1,4 +1,4 @@
-package mission
+package planet
 
 import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"

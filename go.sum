@@ -3,6 +3,12 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/galaxy-empire-team/bridge-api v0.0.0-20260207101841-739d28367da8 h1:9/3J7OlktTfL5VfKhocJ2sCRU9MiQbJuEsLNLSMdQOo=
 github.com/galaxy-empire-team/bridge-api v0.0.0-20260207101841-739d28367da8/go.mod h1:K3T7DUO4/sDQt9rUXITSG02yTe/dZ6froLH2+s9nEbw=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260221074724-79e2a2d5c770 h1:EgZQn3H8aVGVhgz0nFmLY1RsJYMy7wUFG0fcECga0Eo=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260221074724-79e2a2d5c770/go.mod h1:f6RYpKO35bpW/27vSutFL2vu9REZ9DxThxFUVa4o5z0=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260221101534-5979bf691fc7 h1:7/vSgxJEA2eWOqlEoWu3o5bq/yqi6dnfIF+Lb/btuDw=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260221101534-5979bf691fc7/go.mod h1:f6RYpKO35bpW/27vSutFL2vu9REZ9DxThxFUVa4o5z0=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260222100216-979e37c82239 h1:2tobOTQk82gFVLl5Ea4h1NNdZVikxUuTliody4340KY=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260222100216-979e37c82239/go.mod h1:f6RYpKO35bpW/27vSutFL2vu9REZ9DxThxFUVa4o5z0=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/jackc/pgpassfile v1.0.0 h1:/6Hmqy13Ss2zCq62VdNG8tM1wchn8zjSGOBJ6icpsIM=
@@ -19,6 +25,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/robfig/cron/v3 v3.0.1 h1:WdRxkvbJztn8LMz/QEvLN5sBU+xKpSqwwUO1Pjr4qDs=
 github.com/robfig/cron/v3 v3.0.1/go.mod h1:eQICP3HwyT7UooqI/z+Ov+PtYAWygg1TEWWzGIFLtro=
+github.com/samber/lo v1.52.0 h1:Rvi+3BFHES3A8meP33VPAxiBZX/Aws5RxrschYGjomw=
+github.com/samber/lo v1.52.0/go.mod h1:4+MXEGsJzbKGaUEQFKBq2xtfuznW9oz/WrgyzMzRoM0=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=

@@ -4,26 +4,18 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-)
 
-type MissionType string
-
-const (
-	MissionTypeColonize MissionType = "colonize"
+	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 )
 
 type MissionEvent struct {
-	ID         uint64
-	UserID     uuid.UUID
-	PlanetFrom uuid.UUID
-	PlanetTo   Coordinates
-	Type       MissionType
-	StartedAt  time.Time
-	FinishedAt time.Time
-}
-
-type Coordinates struct {
-	X uint8
-	Y uint8
-	Z uint8
+	ID          uint64
+	MissionID   consts.MissionID
+	UserID      uuid.UUID
+	PlanetFrom  uuid.UUID
+	PlanetTo    Coordinates
+	Fleet       []FleetUnit
+	IsReturning bool
+	StartedAt   time.Time
+	FinishedAt  time.Time
 }

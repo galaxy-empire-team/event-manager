@@ -1,4 +1,4 @@
-package mission
+package planet
 
 import (
 	"github.com/google/uuid"
@@ -21,10 +21,16 @@ type coordinates struct {
 }
 
 type fleet struct {
-	Fleet []fleetUnit `json:"fleet"`
+	Fleet []fleetUnit
 }
 
 type fleetUnit struct {
-	ID    consts.FleetUnitID `json:"id"`
-	Count uint64             `json:"count"`
+	ID    consts.FleetUnitID
+	Count uint64
+}
+
+type planetFleetUnit struct {
+	PlanetID uuid.UUID          `json:"planet_id"`
+	FleetID  consts.FleetUnitID `json:"fleet_id"`
+	Count    uint64             `json:"count"`
 }

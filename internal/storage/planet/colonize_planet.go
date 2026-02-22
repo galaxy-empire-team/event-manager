@@ -1,40 +1,41 @@
-package mission
+package planet
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *MissionStorage) ColonizePlanet(ctx context.Context, colonizeEvent models.MissionEvent) error {
+func (r *PlanetStorage) ColonizePlanet(ctx context.Context, colonizeEvent models.MissionEvent) (bool, error) {
 	planetToColonize := fromMissionEvent(colonizeEvent)
 
 	planetID, err := uuid.NewV7()
 	if err != nil {
-		return fmt.Errorf("uuid.NewV7(): %w", err)
+		return false, fmt.Errorf("uuid.NewV7(): %w", err)
 	}
 
 	planetToColonize.ID = planetID
 
-	err = r.createPlanetRow(ctx, planetToColonize)
+	inserted, err := r.createPlanetRow(ctx, planetToColonize)
 	if err != nil {
-		return fmt.Errorf("r.createPlanetRow(): %w", err)
+		return false, fmt.Errorf("r.createPlanetRow(): %w", err)
+	}
+	if !inserted {
+		return false, nil
 	}
 
 	err = r.createResourcesRow(ctx, planetToColonize.ID)
 	if err != nil {
-		return fmt.Errorf("r.createResourcesRow(): %w", err)
+		return false, fmt.Errorf("r.createResourcesRow(): %w", err)
 	}
 
-	return nil
+	return true, nil
 }
 
-func (r *MissionStorage) createPlanetRow(ctx context.Context, planet planetToColonize) error {
+func (r *PlanetStorage) createPlanetRow(ctx context.Context, planet planetToColonize) (bool, error) {
 	const createPlanetQuery = `
 		INSERT INTO session_beta.planets (
 			id,
@@ -54,10 +55,10 @@ func (r *MissionStorage) createPlanetRow(ctx context.Context, planet planetToCol
 			$6,   --- planet.HasMoon
 			$7,   --- planet.IsCapitol
 			NOW() --- colonized_at
-		);
+		) ON CONFLICT (x, y, z) DO NOTHING;
 	`
 
-	_, err := r.DB.Exec(
+	cmd, err := r.DB.Exec(
 		ctx,
 		createPlanetQuery,
 		planet.ID,
@@ -69,25 +70,13 @@ func (r *MissionStorage) createPlanetRow(ctx context.Context, planet planetToCol
 		planet.IsCapitol,
 	)
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			switch pgErr.Code {
-			case "23505": // unique_violation
-				if pgErr.ConstraintName == "planet_have_unique_x_y_z" {
-					return models.ErrPlanetCoordinatesAlreadyTaken
-				}
-
-				return models.ErrCapitolAlreadyExists
-			}
-		}
-
-		return fmt.Errorf("r.DB.Exec(): %w", err)
+		return false, fmt.Errorf("r.DB.Exec(): %w", err)
 	}
 
-	return nil
+	return cmd.RowsAffected() != 0, nil
 }
 
-func (r *MissionStorage) createResourcesRow(ctx context.Context, planetID uuid.UUID) error {
+func (r *PlanetStorage) createResourcesRow(ctx context.Context, planetID uuid.UUID) error {
 	const createResourcesQuery = `
 		INSERT INTO session_beta.planet_resources (
 			planet_id,
