@@ -20,7 +20,7 @@ type App struct {
 func New(cfg config.App) (context.Context, *App, error) {
 	ctx, cancelFn := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 
-	logger, err := newLogger(cfg.Logger)
+	logger, err := newLogger(cfg)
 	if err != nil {
 		return context.Background(), nil, fmt.Errorf("newLogger(): %w", err)
 	}

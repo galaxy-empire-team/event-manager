@@ -25,9 +25,9 @@ func (s *Service) returnMission(ctx context.Context, missionEvent models.Mission
 	}
 
 	// --- create return notification ---
-	mType, err := s.registryProvider.GetMissionTypeByID(missionEvent.MissionID)
+	mType, err := s.registry.GetMissionTypeByID(missionEvent.MissionID)
 	if err != nil {
-		return fmt.Errorf("s.registryProvider.GetMissionTypeByID(): %w", err)
+		return fmt.Errorf("s.registry.GetMissionTypeByID(): %w", err)
 	}
 
 	notificationMsg := returnNotification{
@@ -49,9 +49,9 @@ type returnNotification struct {
 }
 
 func (s *Service) createReturnNotification(ctx context.Context, userID uuid.UUID, returnNotification returnNotification, storage TxStorages) error {
-	nID, err := s.registryProvider.GetNotificationIDByType(consts.NotificationTypeReturn)
+	nID, err := s.registry.GetNotificationIDByType(consts.NotificationTypeReturn)
 	if err != nil {
-		return fmt.Errorf("s.registryProvider.GetNotificationIDByType(): %w", err)
+		return fmt.Errorf("s.registry.GetNotificationIDByType(): %w", err)
 	}
 
 	msg, err := json.Marshal(returnNotification)

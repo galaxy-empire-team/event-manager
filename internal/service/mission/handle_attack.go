@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/samber/lo"
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
@@ -125,15 +124,10 @@ type attackCoordinates struct {
 	Z consts.PlanetPositionZ `json:"z"`
 }
 
-type userIDPair struct {
-	Attacker uuid.UUID
-	Defender uuid.UUID
-}
-
 func (s *Service) createAttackNotificationEvent(ctx context.Context, users userIDPair, attackNotification attackNotification, storage TxStorages) error {
-	nID, err := s.registryProvider.GetNotificationIDByType(consts.NotificationTypeColonize)
+	nID, err := s.registry.GetNotificationIDByType(consts.NotificationTypeColonize)
 	if err != nil {
-		return fmt.Errorf("s.registryProvider.GetNotificationIDByType(): %w", err)
+		return fmt.Errorf("s.registry.GetNotificationIDByType(): %w", err)
 	}
 
 	msg, err := json.Marshal(attackNotification)

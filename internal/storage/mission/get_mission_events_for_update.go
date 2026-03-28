@@ -9,7 +9,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *MissionStorage) GetMissionEventsForUpdate(ctx context.Context) ([]models.MissionEvent, error) {
+func (r *MissionStorage) GetMissionEventsForUpdate(ctx context.Context, missionEventsCount uint16) ([]models.MissionEvent, error) {
 	const getMissionEventsQuery = `
 		SELECT
 			id,
@@ -24,13 +24,14 @@ func (r *MissionStorage) GetMissionEventsForUpdate(ctx context.Context) ([]model
 			started_at,
 			finished_at
 		FROM
-			session_beta.mission_events
+			session_beta.event_missions
 		WHERE
 			finished_at <= NOW() + INTERVAL '1 SECOND'
+		LIMIT $1
 		FOR UPDATE SKIP LOCKED;
 	`
 
-	rows, err := r.DB.Query(ctx, getMissionEventsQuery)
+	rows, err := r.DB.Query(ctx, getMissionEventsQuery, missionEventsCount)
 	if err != nil {
 		return nil, fmt.Errorf("r.DB.Query(): %w", err)
 	}

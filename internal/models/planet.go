@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
@@ -22,9 +24,10 @@ type Coordinates struct {
 }
 
 type Resources struct {
-	Metal   uint64
-	Crystal uint64
-	Gas     uint64
+	Metal     uint64
+	Crystal   uint64
+	Gas       uint64
+	UpdatedAt time.Time
 }
 
 type Fleet struct {

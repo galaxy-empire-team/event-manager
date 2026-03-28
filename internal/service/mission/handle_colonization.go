@@ -54,9 +54,9 @@ type colonizationCoordinates struct {
 }
 
 func (s *Service) createColonizationNotificationEvent(ctx context.Context, colonizationNotification colonizationNotification, storage TxStorages) error {
-	nID, err := s.registryProvider.GetNotificationIDByType(consts.NotificationTypeColonize)
+	nID, err := s.registry.GetNotificationIDByType(consts.NotificationTypeColonize)
 	if err != nil {
-		return fmt.Errorf("s.registryProvider.GetNotificationIDByType(): %w", err)
+		return fmt.Errorf("s.registry.GetNotificationIDByType(): %w", err)
 	}
 
 	msg, err := json.Marshal(colonizationNotification)

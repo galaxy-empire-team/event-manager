@@ -7,13 +7,14 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
+	"github.com/galaxy-empire-team/bridge-api/pkg/registry"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
 type TxStorages interface {
 	// mission storage
 	CreateMissionEvent(ctx context.Context, missionEvent models.MissionEvent) error
-	GetMissionEventsForUpdate(ctx context.Context) ([]models.MissionEvent, error)
+	GetMissionEventsForUpdate(ctx context.Context, missionEventsCount uint16) ([]models.MissionEvent, error)
 	DeleteMissionEvents(ctx context.Context, eventsToDelete []models.MissionEvent) error
 
 	// planet storage
@@ -24,6 +25,10 @@ type TxStorages interface {
 	GetPlanetFleetForUpdate(ctx context.Context, planetID uuid.UUID) ([]models.FleetUnit, error)
 	SetPlanetFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
 	UpsertFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
+	GetAllBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error)
+	GetBuildingsInfoByTypes(ctx context.Context, planetID uuid.UUID, BuildingTypes []consts.BuildingType) (map[consts.BuildingType]models.BuildingInfo, error)
+	GetResourcesForUpdate(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
+	SetResources(ctx context.Context, planetID uuid.UUID, updatedResources models.Resources) error
 
 	// notification storage
 	SaveNotificationEvents(ctx context.Context, notificationEvents []models.NotificationEvent) error
@@ -37,18 +42,19 @@ type registryProvider interface {
 	GetMissionTypeByID(missionID consts.MissionID) (consts.MissionType, error)
 	GetMissionIDByType(missionType consts.MissionType) (consts.MissionID, error)
 	GetNotificationIDByType(notificationType consts.NotificationType) (consts.NotificationID, error)
+	GetBuildingZeroLvlStats(buildingType consts.BuildingType) (registry.BuildingStats, error)
 }
 
 type Service struct {
-	txManager        txManager
-	registryProvider registryProvider
-	logger           *zap.Logger
+	txManager txManager
+	registry  registryProvider
+	logger    *zap.Logger
 }
 
 func New(txManager txManager, registryProvider registryProvider, logger *zap.Logger) *Service {
 	return &Service{
-		txManager:        txManager,
-		registryProvider: registryProvider,
-		logger:           logger,
+		txManager: txManager,
+		registry:  registryProvider,
+		logger:    logger,
 	}
 }

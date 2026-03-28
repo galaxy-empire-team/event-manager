@@ -7,7 +7,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *BuildingStorage) GetBuildEvents(ctx context.Context) ([]models.BuildEvent, error) {
+func (r *BuildingStorage) GetBuildEvents(ctx context.Context, buildEventsCount uint16) ([]models.BuildEvent, error) {
 	const getBuildEventsQuery = `
 		SELECT
 			id,
@@ -16,13 +16,14 @@ func (r *BuildingStorage) GetBuildEvents(ctx context.Context) ([]models.BuildEve
 			started_at,
 			finished_at
 		FROM
-			session_beta.building_events
+			session_beta.event_buildings
 		WHERE
 			finished_at <= NOW() + INTERVAL '1 SECOND'
+		LIMIT $1
 		FOR UPDATE SKIP LOCKED;
 	`
 
-	rows, err := r.DB.Query(ctx, getBuildEventsQuery)
+	rows, err := r.DB.Query(ctx, getBuildEventsQuery, buildEventsCount)
 	if err != nil {
 		return nil, fmt.Errorf("r.DB.Query(): %w", err)
 	}

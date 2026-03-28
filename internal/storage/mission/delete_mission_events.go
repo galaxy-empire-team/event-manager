@@ -13,7 +13,7 @@ func (r *MissionStorage) DeleteMissionEvents(ctx context.Context, events []model
 	}
 
 	const deleteMissionEventQuery = `
-		DELETE FROM session_beta.mission_events WHERE id = ANY($1);
+		DELETE FROM session_beta.event_missions WHERE id = ANY($1);
 	`
 
 	idsToDelete := make([]uint64, 0, len(events))

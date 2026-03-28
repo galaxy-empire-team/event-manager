@@ -9,12 +9,12 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func newLogger(cfg config.Logger) (*zap.Logger, error) {
+func newLogger(cfg config.App) (*zap.Logger, error) {
 	encoderCfg := zap.NewProductionEncoderConfig()
 	encoderCfg.TimeKey = "timestamp"
 	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	level, err := zap.ParseAtomicLevel(cfg.Level)
+	level, err := zap.ParseAtomicLevel(cfg.LogLevel)
 	if err != nil {
 		return nil, fmt.Errorf("zap.NewAtomicLevelAt(): %w", err)
 	}
@@ -25,7 +25,7 @@ func newLogger(cfg config.Logger) (*zap.Logger, error) {
 		DisableCaller:     true,
 		DisableStacktrace: false,
 		Sampling:          nil,
-		Encoding:          cfg.Format,
+		Encoding:          cfg.LogFormat,
 		EncoderConfig:     encoderCfg,
 		OutputPaths:       []string{"stdout"},
 	}

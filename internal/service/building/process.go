@@ -10,9 +10,9 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (s *Service) HandleBuilds(ctx context.Context) error {
+func (s *Service) Process(ctx context.Context, buildEventsCount uint16) error {
 	err := s.txManager.ExecBuildingTx(ctx, func(ctx context.Context, buildingStorage BuildingStorage) error {
-		buildEvents, err := buildingStorage.GetBuildEvents(ctx)
+		buildEvents, err := buildingStorage.GetBuildEvents(ctx, buildEventsCount)
 		if err != nil {
 			return fmt.Errorf("buildingStorage.GetBuildEvents(): %w", err)
 		}

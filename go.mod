@@ -7,7 +7,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/robfig/cron/v3 v3.0.1
 	github.com/samber/lo v1.52.0
 	go.uber.org/zap v1.27.1
 )

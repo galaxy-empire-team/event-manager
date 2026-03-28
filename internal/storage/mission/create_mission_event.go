@@ -10,7 +10,7 @@ import (
 
 func (s *MissionStorage) CreateMissionEvent(ctx context.Context, missionEvent models.MissionEvent) error {
 	const createEventQuery = `
-		INSERT INTO session_beta.mission_events (
+		INSERT INTO session_beta.event_missions (
 			mission_id,
 			user_id,
 			planet_from,

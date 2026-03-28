@@ -9,9 +9,9 @@ import (
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 )
 
-func (s *Service) HandleMissions(ctx context.Context) error {
+func (s *Service) Process(ctx context.Context, missionEventsCount uint16) error {
 	err := s.txManager.ExecMissionTx(ctx, func(ctx context.Context, txStorages TxStorages) error {
-		missionEvents, err := txStorages.GetMissionEventsForUpdate(ctx)
+		missionEvents, err := txStorages.GetMissionEventsForUpdate(ctx, missionEventsCount)
 		if err != nil {
 			return fmt.Errorf("txStorages.GetMissionEventsForUpdate(): %w", err)
 		}
@@ -23,7 +23,7 @@ func (s *Service) HandleMissions(ctx context.Context) error {
 		}
 
 		for _, missionEvent := range missionEvents {
-			mType, err := s.registryProvider.GetMissionTypeByID(missionEvent.MissionID)
+			mType, err := s.registry.GetMissionTypeByID(missionEvent.MissionID)
 			if err != nil {
 				s.logger.Error("get mission type from registry", zap.Any("missionEvent", missionEvent), zap.Error(err))
 				continue
@@ -48,6 +48,11 @@ func (s *Service) HandleMissions(ctx context.Context) error {
 				err := s.handleAttack(ctx, missionEvent, txStorages)
 				if err != nil {
 					return fmt.Errorf("s.handleAttack(): %w", err)
+				}
+			case consts.MissionTypeSpy:
+				err := s.handleSpy(ctx, missionEvent, txStorages)
+				if err != nil {
+					return fmt.Errorf("s.handleSpy(): %w", err)
 				}
 			default:
 				s.logger.Warn("Unknown mission type", zap.Any("missionEvent", missionEvent))

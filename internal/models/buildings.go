@@ -21,3 +21,9 @@ type BuildingUpgrade struct {
 	CurrentBuildingID consts.BuildingID
 	UpdatedBuildingID consts.BuildingID
 }
+
+type BuildingInfo struct {
+	ID          consts.BuildingID
+	Type        consts.BuildingType
+	ProductionS uint64
+}

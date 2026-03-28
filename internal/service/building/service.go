@@ -11,7 +11,7 @@ import (
 )
 
 type BuildingStorage interface {
-	GetBuildEvents(ctx context.Context) ([]models.BuildEvent, error)
+	GetBuildEvents(ctx context.Context, buildEventsCount uint16) ([]models.BuildEvent, error)
 	DeleteBuildEvents(ctx context.Context, events []models.BuildEvent) error
 	SetBuildingID(ctx context.Context, building models.BuildingUpgrade) error
 }
