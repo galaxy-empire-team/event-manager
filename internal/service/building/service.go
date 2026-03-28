@@ -6,7 +6,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
-	"github.com/galaxy-empire-team/bridge-api/pkg/registry"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
@@ -21,7 +20,7 @@ type txManager interface {
 }
 
 type registryProvider interface {
-	GetBuildingNextLvlStats(buildingID consts.BuildingID) (registry.BuildingStats, error)
+	GetBuildingNextLvlID(buildingID consts.BuildingID) (consts.BuildingID, error)
 }
 
 type Service struct {

@@ -3,7 +3,7 @@ module github.com/galaxy-empire-team/event-manager
 go 1.24.0
 
 require (
-	github.com/galaxy-empire-team/bridge-api v0.0.0-20260222100216-979e37c82239
+	github.com/galaxy-empire-team/bridge-api v0.0.0-20260328053308-d00acd676091
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/kelseyhightower/envconfig v1.4.0

@@ -15,7 +15,7 @@ func (s *Service) handleSpy(ctx context.Context, missionEvent models.MissionEven
 		return fmt.Errorf("storage.GetPlanetInfoByCoordinates(): %w", err)
 	}
 
-	planetResources, err := s.getResourcesForUpdate(ctx, targetPlanet.ID, missionEvent.FinishedAt, storage)
+	planetResources, err := s.getResourcesForUpdate(ctx, targetPlanet.UserID, targetPlanet.ID, missionEvent.FinishedAt, storage)
 	if err != nil {
 		return fmt.Errorf("s.getResourcesForUpdate(): %w", err)
 	}

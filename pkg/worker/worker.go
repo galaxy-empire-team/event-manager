@@ -40,7 +40,6 @@ func StartWorker(ctx context.Context, cfg config.Worker, service service, logger
 				case <-ticker.C:
 					if err := service.Process(ctx, cfg.EventCount); err != nil {
 						logger.Error("worker process error", zap.Error(err))
-						continue
 					}
 				}
 			}

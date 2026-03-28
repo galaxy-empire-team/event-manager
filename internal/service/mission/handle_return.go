@@ -19,9 +19,9 @@ func (s *Service) returnMission(ctx context.Context, missionEvent models.Mission
 		return fmt.Errorf("storage.GetPlanetInfoByCoordinates(): %w", err)
 	}
 
-	err = storage.UpsertFleet(ctx, planetInfo.ID, missionEvent.Fleet)
+	err = storage.AddFleet(ctx, planetInfo.ID, missionEvent.Fleet)
 	if err != nil {
-		return fmt.Errorf("storage.UpsertFleet(): %w", err)
+		return fmt.Errorf("storage.AddFleet(): %w", err)
 	}
 
 	// --- create return notification ---

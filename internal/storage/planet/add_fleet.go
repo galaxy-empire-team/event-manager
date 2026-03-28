@@ -9,7 +9,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (s *PlanetStorage) UpsertFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error {
+func (s *PlanetStorage) AddFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error {
 	const setPlanetFleetQuery = `
 		INSERT INTO session_beta.planet_fleet AS pf (planet_id, fleet_id, count, updated_at)
 			SELECT x.planet_id, x.fleet_id, x.count, NOW()

@@ -11,10 +11,15 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (s *Service) getResourcesForUpdate(ctx context.Context, planetID uuid.UUID, updatedAt time.Time, storage TxStorages) (models.Resources, error) {
-	planetBuildingsInfo, err := s.getMinesInfo(ctx, planetID, storage)
+func (s *Service) getResourcesForUpdate(ctx context.Context, userID uuid.UUID, planetID uuid.UUID, updatedAt time.Time, storage TxStorages) (models.Resources, error) {
+	multiplier, err := s.getResearchResourceMultiplier(ctx, userID, storage)
 	if err != nil {
-		return models.Resources{}, fmt.Errorf("GetMinesInfo(): %w", err)
+		return models.Resources{}, fmt.Errorf("getResearchResourceMultiplier(): %w", err)
+	}
+
+	mines, err := storage.GetPlanetMinesProduction(ctx, planetID)
+	if err != nil {
+		return models.Resources{}, fmt.Errorf("storage.GetPlanetMinesProduction(): %w", err)
 	}
 
 	resources, err := storage.GetResourcesForUpdate(ctx, planetID)
@@ -27,37 +32,39 @@ func (s *Service) getResourcesForUpdate(ctx context.Context, planetID uuid.UUID,
 		return models.Resources{}, nil
 	}
 
+	metalProductionPerSecond := float32(mines[consts.BuildingTypeMetalMine]) * multiplier
+	crystalProductionPerSecond := float32(mines[consts.BuildingTypeCrystalMine]) * multiplier
+	gasProductionPerSecond := float32(mines[consts.BuildingTypeGasMine]) * multiplier
+
 	updatedResources := models.Resources{
-		Metal:     resources.Metal + uint64(millisecondsSinceLastUpdate)*planetBuildingsInfo[consts.BuildingTypeMetalMine].ProductionS/1000,
-		Crystal:   resources.Crystal + uint64(millisecondsSinceLastUpdate)*planetBuildingsInfo[consts.BuildingTypeCrystalMine].ProductionS/1000,
-		Gas:       resources.Gas + uint64(millisecondsSinceLastUpdate)*planetBuildingsInfo[consts.BuildingTypeGasMine].ProductionS/1000,
+		Metal:     resources.Metal + uint64(millisecondsSinceLastUpdate)*uint64(metalProductionPerSecond)/1000,
+		Crystal:   resources.Crystal + uint64(millisecondsSinceLastUpdate)*uint64(crystalProductionPerSecond)/1000,
+		Gas:       resources.Gas + uint64(millisecondsSinceLastUpdate)*uint64(gasProductionPerSecond)/1000,
 		UpdatedAt: updatedAt,
 	}
 
 	return updatedResources, nil
 }
 
-func (s *Service) getMinesInfo(ctx context.Context, planetID uuid.UUID, storage TxStorages) (map[consts.BuildingType]models.BuildingInfo, error) {
-	mines, err := storage.GetBuildingsInfoByTypes(ctx, planetID, consts.GetMineTypes())
+func (s *Service) getResearchResourceMultiplier(ctx context.Context, userID uuid.UUID, storage TxStorages) (float32, error) {
+	researchIDs, err := storage.GetUserResearches(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("storage.GetBuildingsInfoByTypes(): %w", err)
+		return 0, fmt.Errorf("storage.GetUserResearches(): %w", err)
 	}
 
-	// If mines are not build yet, initialize them with default values
-	for _, mineType := range consts.GetMineTypes() {
-		if _, exists := mines[mineType]; !exists {
-			stat, err := s.registry.GetBuildingZeroLvlStats(mineType)
-			if err != nil {
-				return nil, fmt.Errorf("registry.GetBuildingZeroLvlStats(): %w", err)
-			}
-
-			mines[mineType] = models.BuildingInfo{
-				ID:          stat.ID,
-				Type:        stat.Type,
-				ProductionS: stat.ProductionS,
-			}
+	for _, researchID := range researchIDs {
+		research, err := s.registry.GetResearchStatsByID(researchID)
+		if err != nil {
+			return 0, fmt.Errorf("registry.GetResearchStatsByID(): %w", err)
 		}
+
+		if research.Type != consts.ResearchTypeIndustrialTechnology {
+			continue
+		}
+
+		return research.Bonuses.ProductionSpeedImprove, nil
 	}
 
-	return mines, nil
+	// If user has no industrial technology research, return 1
+	return 1, nil
 }

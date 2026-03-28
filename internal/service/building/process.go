@@ -24,7 +24,7 @@ func (s *Service) Process(ctx context.Context, buildEventsCount uint16) error {
 		}
 
 		for _, buildEvent := range buildEvents {
-			nextLvlBuilding, err := s.registry.GetBuildingNextLvlStats(consts.BuildingID(buildEvent.BuildingID))
+			nextLvlBuildingID, err := s.registry.GetBuildingNextLvlID(consts.BuildingID(buildEvent.BuildingID))
 			if err != nil {
 				return fmt.Errorf("s.registry.GetNextLevelBuildingID(): %w", err)
 			}
@@ -32,7 +32,7 @@ func (s *Service) Process(ctx context.Context, buildEventsCount uint16) error {
 			updatedBuilding := models.BuildingUpgrade{
 				PlanetID:          buildEvent.PlanetID,
 				CurrentBuildingID: buildEvent.BuildingID,
-				UpdatedBuildingID: nextLvlBuilding.ID,
+				UpdatedBuildingID: nextLvlBuildingID,
 			}
 
 			err = buildingStorage.SetBuildingID(ctx, updatedBuilding)

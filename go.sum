@@ -3,6 +3,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/galaxy-empire-team/bridge-api v0.0.0-20260222100216-979e37c82239 h1:2tobOTQk82gFVLl5Ea4h1NNdZVikxUuTliody4340KY=
 github.com/galaxy-empire-team/bridge-api v0.0.0-20260222100216-979e37c82239/go.mod h1:f6RYpKO35bpW/27vSutFL2vu9REZ9DxThxFUVa4o5z0=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260328053308-d00acd676091 h1:uKYfEVdGoKIxIyxNwx3GViyt9/5QWHHv0hjodBi6TTw=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260328053308-d00acd676091/go.mod h1:f6RYpKO35bpW/27vSutFL2vu9REZ9DxThxFUVa4o5z0=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/jackc/pgpassfile v1.0.0 h1:/6Hmqy13Ss2zCq62VdNG8tM1wchn8zjSGOBJ6icpsIM=

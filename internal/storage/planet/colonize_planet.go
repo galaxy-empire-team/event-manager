@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
@@ -30,6 +31,11 @@ func (r *PlanetStorage) ColonizePlanet(ctx context.Context, colonizeEvent models
 	err = r.createResourcesRow(ctx, planetToColonize.ID)
 	if err != nil {
 		return false, fmt.Errorf("r.createResourcesRow(): %w", err)
+	}
+
+	err = r.createMineRows(ctx, planetToColonize.ID)
+	if err != nil {
+		return false, fmt.Errorf("r.createMineRows(): %w", err)
 	}
 
 	return true, nil
@@ -100,6 +106,30 @@ func (r *PlanetStorage) createResourcesRow(ctx context.Context, planetID uuid.UU
 	)
 	if err != nil {
 		return fmt.Errorf("r.DB.Exec(): %w", err)
+	}
+
+	return nil
+}
+
+func (r *PlanetStorage) createMineRows(ctx context.Context, planetID uuid.UUID) error {
+	const createMinesQuery = `
+		INSERT INTO session_beta.planet_buildings (
+			planet_id,
+			building_id
+		)
+		SELECT $1, id
+		FROM session_beta.s_buildings sb
+		WHERE sb.building_type = ANY($2) AND sb.level = 1;
+	`
+
+	_, err := r.DB.Exec(
+		ctx,
+		createMinesQuery,
+		planetID,
+		[]consts.BuildingType{consts.BuildingTypeMetalMine, consts.BuildingTypeCrystalMine, consts.BuildingTypeGasMine},
+	)
+	if err != nil {
+		return fmt.Errorf("DB.Pool.Exec(): %w", err)
 	}
 
 	return nil
