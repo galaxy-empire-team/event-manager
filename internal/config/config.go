@@ -7,11 +7,13 @@ import (
 )
 
 type Config struct {
-	Server         Server `envconfig:"SERVER"`
-	PgConn         PgConn `envconfig:"PG"`
-	App            App    `envconfig:"APP"`
-	BuildingWorker Worker `envconfig:"WORKER_BUILDINGS"`
-	MissionWorker  Worker `envconfig:"WORKER_MISSIONS"`
+	Server          Server          `envconfig:"SERVER"`
+	PgConn          PgConn          `envconfig:"PG"`
+	App             App             `envconfig:"APP"`
+	BuildingWorker  Worker          `envconfig:"WORKER_BUILDINGS"`
+	MissionWorker   Worker          `envconfig:"WORKER_MISSIONS"`
+	ResearchWorker  Worker          `envconfig:"WORKER_RESEARCH"`
+	BridgeAPIClient BridgeAPIClient `envconfig:"BRIDGE_API_CLIENT"`
 }
 
 func New() (Config, error) {

@@ -15,14 +15,13 @@ func (s *Service) handleSpy(ctx context.Context, missionEvent models.MissionEven
 		return fmt.Errorf("storage.GetPlanetInfoByCoordinates(): %w", err)
 	}
 
-	planetResources, err := s.getResourcesForUpdate(ctx, targetPlanet.UserID, targetPlanet.ID, missionEvent.FinishedAt, storage)
-	if err != nil {
-		return fmt.Errorf("s.getResourcesForUpdate(): %w", err)
+	if err := s.bridgeAPIClient.UpdatePlanetResources(ctx, missionEvent.UserID, targetPlanet.ID, missionEvent.FinishedAt); err != nil {
+		return fmt.Errorf("bridgeAPIClient.UpdatePlanetResources(): %w", err)
 	}
 
-	err = storage.SetResources(ctx, targetPlanet.ID, planetResources)
+	planetResources, err := storage.GetResources(ctx, targetPlanet.ID)
 	if err != nil {
-		return fmt.Errorf("storage.SetResources(): %w", err)
+		return fmt.Errorf("storage.GetResources(): %w", err)
 	}
 
 	buildingIDs, err := storage.GetAllBuildings(ctx, targetPlanet.ID)

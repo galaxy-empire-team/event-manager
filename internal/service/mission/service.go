@@ -2,6 +2,7 @@ package mission
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -21,6 +22,7 @@ type TxStorages interface {
 	ColonizePlanet(ctx context.Context, colonizeEvents models.MissionEvent) (colonized bool, err error)
 	GetPlanetInfoByCoordinates(ctx context.Context, planetFrom models.Coordinates) (models.Planet, error)
 	GetPlanetInfoByID(ctx context.Context, planetID uuid.UUID) (models.Planet, error)
+	GetResources(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
 	GetResourcesForUpdate(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
 	SetResources(ctx context.Context, planetID uuid.UUID, updatedResources models.Resources) error
 	GetPlanetFleetForUpdate(ctx context.Context, planetID uuid.UUID) ([]models.FleetUnit, error)
@@ -40,6 +42,10 @@ type txManager interface {
 	ExecMissionTx(ctx context.Context, fn func(ctx context.Context, txStorages TxStorages) error) error
 }
 
+type bridgeAPIClient interface {
+	UpdatePlanetResources(ctx context.Context, userID uuid.UUID, planetID uuid.UUID, updatedTime time.Time) error
+}
+
 type registryProvider interface {
 	GetMissionTypeByID(missionID consts.MissionID) (consts.MissionType, error)
 	GetMissionIDByType(missionType consts.MissionType) (consts.MissionID, error)
@@ -48,15 +54,17 @@ type registryProvider interface {
 }
 
 type Service struct {
-	txManager txManager
-	registry  registryProvider
-	logger    *zap.Logger
+	txManager       txManager
+	bridgeAPIClient bridgeAPIClient
+	registry        registryProvider
+	logger          *zap.Logger
 }
 
-func New(txManager txManager, registryProvider registryProvider, logger *zap.Logger) *Service {
+func New(txManager txManager, bridgeAPIClient bridgeAPIClient, registryProvider registryProvider, logger *zap.Logger) *Service {
 	return &Service{
-		txManager: txManager,
-		registry:  registryProvider,
-		logger:    logger,
+		txManager:       txManager,
+		bridgeAPIClient: bridgeAPIClient,
+		registry:        registryProvider,
+		logger:          logger,
 	}
 }

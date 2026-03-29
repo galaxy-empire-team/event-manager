@@ -6,10 +6,12 @@ import (
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/registry"
 	"github.com/galaxy-empire-team/event-manager/internal/app"
+	"github.com/galaxy-empire-team/event-manager/internal/clients/bridgeapi"
 	"github.com/galaxy-empire-team/event-manager/internal/config"
 	"github.com/galaxy-empire-team/event-manager/internal/db"
 	buildingservice "github.com/galaxy-empire-team/event-manager/internal/service/building"
 	missionservice "github.com/galaxy-empire-team/event-manager/internal/service/mission"
+	researchservice "github.com/galaxy-empire-team/event-manager/internal/service/research"
 	"github.com/galaxy-empire-team/event-manager/internal/storage/txmanager"
 	"github.com/galaxy-empire-team/event-manager/pkg/worker"
 )
@@ -38,6 +40,13 @@ func run() error {
 	}
 	defer db.Close()
 
+	// initialize clients.
+	bridgeAPIClient, err := bridgeapi.New(cfg.BridgeAPIClient)
+	if err != nil {
+		return fmt.Errorf("bridgeapi.New(): %w", err)
+	}
+	defer bridgeAPIClient.Close()
+
 	// initialize manager that implemets storage methods inside transactions.
 	txManager := txmanager.New(db)
 
@@ -48,7 +57,8 @@ func run() error {
 
 	// initialize services. Use other binaries for other services as needed.
 	buildingService := buildingservice.New(txManager, reg, app.ComponentLogger("buildingservice"))
-	missionService := missionservice.New(txManager, reg, app.ComponentLogger("missionservice"))
+	missionService := missionservice.New(txManager, bridgeAPIClient, reg, app.ComponentLogger("missionservice"))
+	researchService := researchservice.New(txManager, reg, app.ComponentLogger("researchservice"))
 
 	worker.StartWorker(
 		ctx,
@@ -62,6 +72,13 @@ func run() error {
 		cfg.MissionWorker,
 		missionService,
 		app.ComponentLogger("mission_worker"),
+	)
+
+	worker.StartWorker(
+		ctx,
+		cfg.ResearchWorker,
+		researchService,
+		app.ComponentLogger("research_worker"),
 	)
 
 	app.WaitShutdown(ctx)
