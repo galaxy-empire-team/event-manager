@@ -1,4 +1,4 @@
-package building
+package events
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *BuildingStorage) GetBuildEvents(ctx context.Context, buildEventsCount uint16) ([]models.BuildEvent, error) {
+func (r *EventsStorage) GetBuildEvents(ctx context.Context, buildEventsCount uint16) ([]models.BuildEvent, error) {
 	const getBuildEventsQuery = `
 		SELECT
 			id,
@@ -30,6 +30,7 @@ func (r *BuildingStorage) GetBuildEvents(ctx context.Context, buildEventsCount u
 	defer rows.Close()
 
 	var buildEvents []models.BuildEvent
+
 	for rows.Next() {
 		var be models.BuildEvent
 

@@ -133,6 +133,7 @@ func (s *Service) createSpyNotificationEvent(ctx context.Context, users userIDPa
 			Data:           deffenderMsg,
 		},
 	}
+
 	err = storage.SaveNotificationEvents(ctx, notificationEvents)
 	if err != nil {
 		return fmt.Errorf("storage.SaveNotificationEvents(): %w", err)

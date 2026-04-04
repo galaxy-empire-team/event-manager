@@ -24,6 +24,7 @@ func (r *PlanetStorage) ColonizePlanet(ctx context.Context, colonizeEvent models
 	if err != nil {
 		return false, fmt.Errorf("r.createPlanetRow(): %w", err)
 	}
+
 	if !inserted {
 		return false, nil
 	}

@@ -1,4 +1,4 @@
-package mission
+package events
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *MissionStorage) DeleteMissionEvents(ctx context.Context, events []models.MissionEvent) error {
+func (r *EventsStorage) DeleteFleetConstructionEvents(ctx context.Context, events []models.FleetConstructionEvent) error {
 	if len(events) == 0 {
 		return nil
 	}
 
-	const deleteMissionEventQuery = `
-		DELETE FROM session_beta.event_missions WHERE id = ANY($1);
+	const deleteEventQuery = `
+		DELETE FROM session_beta.event_fleet_constructions WHERE id = ANY($1);
 	`
 
 	idsToDelete := make([]uint64, 0, len(events))
@@ -21,7 +21,7 @@ func (r *MissionStorage) DeleteMissionEvents(ctx context.Context, events []model
 		idsToDelete = append(idsToDelete, e.ID)
 	}
 
-	_, err := r.DB.Exec(ctx, deleteMissionEventQuery, idsToDelete)
+	_, err := r.DB.Exec(ctx, deleteEventQuery, idsToDelete)
 	if err != nil {
 		return fmt.Errorf("DB.Exec(): %w", err)
 	}

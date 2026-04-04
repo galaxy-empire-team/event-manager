@@ -19,7 +19,9 @@ func (r *PlanetStorage) GetResources(ctx context.Context, planetID uuid.UUID) (m
 		FROM session_beta.planet_resources
 		WHERE planet_id = $1;
 	`
+
 	var resources models.Resources
+
 	err := r.DB.QueryRow(ctx, getResourcesQuery, planetID).Scan(
 		&resources.Metal,
 		&resources.Crystal,

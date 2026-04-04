@@ -18,6 +18,7 @@ func (s *Service) handleColonization(ctx context.Context, missionEvent models.Mi
 	if err != nil {
 		return fmt.Errorf("storage.ColonizePlanet(): %w", err)
 	}
+
 	if !colonized {
 		colonizationErr = "Planet is already colonized"
 	}

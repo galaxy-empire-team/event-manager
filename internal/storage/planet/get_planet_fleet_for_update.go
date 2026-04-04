@@ -19,6 +19,7 @@ func (s *PlanetStorage) GetPlanetFleetForUpdate(ctx context.Context, planetID uu
 	`
 
 	var fleet []models.FleetUnit
+
 	rows, err := s.DB.Query(ctx, getPlanetFleetQuery, planetID)
 	if err != nil {
 		return nil, err

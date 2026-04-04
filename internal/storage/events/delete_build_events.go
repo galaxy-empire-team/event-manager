@@ -1,4 +1,4 @@
-package research
+package events
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *ResearchStorage) DeleteResearchEvents(ctx context.Context, events []models.ResearchEvent) error {
+func (r *EventsStorage) DeleteBuildEvents(ctx context.Context, events []models.BuildEvent) error {
 	if len(events) == 0 {
 		return nil
 	}
 
 	const deleteEventQuery = `
-		DELETE FROM session_beta.event_researches WHERE id = ANY($1);
+		DELETE FROM session_beta.event_buildings WHERE id = ANY($1);
 	`
 
 	idsToDelete := make([]uint64, 0, len(events))

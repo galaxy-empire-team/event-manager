@@ -1,16 +1,16 @@
-package building
+package events
 
 import (
 	"github.com/galaxy-empire-team/event-manager/internal/db"
 )
 
 // Embed txManager requires different naming -> can't use 'storage' storage name :().
-type BuildingStorage struct {
+type EventsStorage struct {
 	DB db.DB
 }
 
-func New(db db.DB) *BuildingStorage {
-	return &BuildingStorage{
+func New(db db.DB) *EventsStorage {
+	return &EventsStorage{
 		DB: db,
 	}
 }

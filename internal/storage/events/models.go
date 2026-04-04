@@ -1,4 +1,4 @@
-package mission
+package events
 
 import (
 	"github.com/google/uuid"

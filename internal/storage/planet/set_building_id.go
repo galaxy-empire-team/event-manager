@@ -1,4 +1,4 @@
-package building
+package planet
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *BuildingStorage) SetBuildingID(ctx context.Context, building models.BuildingUpgrade) error {
+func (r *PlanetStorage) SetBuildingID(ctx context.Context, building models.BuildingUpgrade) error {
 	const createBuildingQuery = `
 		WITH d AS (
 			DELETE FROM session_beta.planet_buildings

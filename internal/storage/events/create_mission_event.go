@@ -1,4 +1,4 @@
-package mission
+package events
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (s *MissionStorage) CreateMissionEvent(ctx context.Context, missionEvent models.MissionEvent) error {
+func (s *EventsStorage) CreateMissionEvent(ctx context.Context, missionEvent models.MissionEvent) error {
 	const createEventQuery = `
 		INSERT INTO session_beta.event_missions (
 			mission_id,

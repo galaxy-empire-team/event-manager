@@ -36,6 +36,15 @@ type MissionEvent struct {
 	FinishedAt  time.Time
 }
 
+type FleetConstructionEvent struct {
+	ID         uint64
+	PlanetID   uuid.UUID
+	FleetID    consts.FleetUnitID
+	Count      uint64
+	StartedAt  time.Time
+	FinishedAt time.Time
+}
+
 type NotificationEvent struct {
 	UserID         uuid.UUID
 	NotificationID consts.NotificationID

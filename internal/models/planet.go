@@ -9,7 +9,7 @@ import (
 )
 
 // Insert userLogin to avoid additional requests to the database;
-// TODO: Remove after notification pipeline impl
+// TODO: Remove after notification pipeline impl.
 type Planet struct {
 	ID          uuid.UUID
 	UserID      uuid.UUID

@@ -10,7 +10,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-// GetPlanetMinesProduction retrieves mine information from the target planet's buildings
+// GetPlanetMinesProduction retrieves mine information from the target planet's buildings.
 func (s *PlanetStorage) GetPlanetMinesProduction(ctx context.Context, planetID uuid.UUID) (map[consts.BuildingType]uint64, error) {
 	const getMineInfoQuery = `
 		SELECT 
@@ -31,6 +31,7 @@ func (s *PlanetStorage) GetPlanetMinesProduction(ctx context.Context, planetID u
 	defer rows.Close()
 
 	minesProduction := make(map[consts.BuildingType]uint64)
+
 	for rows.Next() {
 		var buildingInfo models.BuildingInfo
 

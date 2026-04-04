@@ -15,7 +15,7 @@ import (
 type TxStorages interface {
 	// mission storage
 	CreateMissionEvent(ctx context.Context, missionEvent models.MissionEvent) error
-	GetMissionEventsForUpdate(ctx context.Context, missionEventsCount uint16) ([]models.MissionEvent, error)
+	GetMissionEvents(ctx context.Context, missionEventsCount uint16) ([]models.MissionEvent, error)
 	DeleteMissionEvents(ctx context.Context, eventsToDelete []models.MissionEvent) error
 
 	// planet storage

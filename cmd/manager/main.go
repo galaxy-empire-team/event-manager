@@ -10,6 +10,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/config"
 	"github.com/galaxy-empire-team/event-manager/internal/db"
 	buildingservice "github.com/galaxy-empire-team/event-manager/internal/service/building"
+	fleetconstructionservice "github.com/galaxy-empire-team/event-manager/internal/service/fleetconsturction"
 	missionservice "github.com/galaxy-empire-team/event-manager/internal/service/mission"
 	researchservice "github.com/galaxy-empire-team/event-manager/internal/service/research"
 	"github.com/galaxy-empire-team/event-manager/internal/storage/txmanager"
@@ -59,6 +60,7 @@ func run() error {
 	buildingService := buildingservice.New(txManager, reg, app.ComponentLogger("buildingservice"))
 	missionService := missionservice.New(txManager, bridgeAPIClient, reg, app.ComponentLogger("missionservice"))
 	researchService := researchservice.New(txManager, reg, app.ComponentLogger("researchservice"))
+	fleetConstructionService := fleetconstructionservice.New(txManager, app.ComponentLogger("fleetConstructionService"))
 
 	worker.StartWorker(
 		ctx,
@@ -79,6 +81,13 @@ func run() error {
 		cfg.ResearchWorker,
 		researchService,
 		app.ComponentLogger("research_worker"),
+	)
+
+	worker.StartWorker(
+		ctx,
+		cfg.FleetConstructionWorker,
+		fleetConstructionService,
+		app.ComponentLogger("fleet_construction_worker"),
 	)
 
 	app.WaitShutdown(ctx)

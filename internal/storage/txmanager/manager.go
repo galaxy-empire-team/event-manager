@@ -9,6 +9,7 @@ import (
 
 	"github.com/galaxy-empire-team/event-manager/internal/db"
 	buildingservice "github.com/galaxy-empire-team/event-manager/internal/service/building"
+	fleetconstructionservice "github.com/galaxy-empire-team/event-manager/internal/service/fleetconsturction"
 	missionservice "github.com/galaxy-empire-team/event-manager/internal/service/mission"
 	researchservice "github.com/galaxy-empire-team/event-manager/internal/service/research"
 )
@@ -48,6 +49,17 @@ func (m *TxManager) ExecMissionTx(
 func (m *TxManager) ExecResearchTx(
 	ctx context.Context,
 	handler func(ctx context.Context, storages researchservice.TxStorages) error,
+) error {
+	return m.exec(ctx, func(tx pgx.Tx) error {
+		return handler(ctx, newStorageSet(tx))
+	})
+}
+
+// ExecFleetConstructionTx implemets methods required by fleet construction service. I decided to copy func for each service
+// insted of making factories or use empty interfaces.
+func (m *TxManager) ExecFleetConstructionTx(
+	ctx context.Context,
+	handler func(ctx context.Context, storages fleetconstructionservice.TxStorages) error,
 ) error {
 	return m.exec(ctx, func(tx pgx.Tx) error {
 		return handler(ctx, newStorageSet(tx))

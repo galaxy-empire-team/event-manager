@@ -11,7 +11,7 @@ import (
 
 func (s *Service) Process(ctx context.Context, missionEventsCount uint16) error {
 	err := s.txManager.ExecMissionTx(ctx, func(ctx context.Context, txStorages TxStorages) error {
-		missionEvents, err := txStorages.GetMissionEventsForUpdate(ctx, missionEventsCount)
+		missionEvents, err := txStorages.GetMissionEvents(ctx, missionEventsCount)
 		if err != nil {
 			return fmt.Errorf("txStorages.GetMissionEventsForUpdate(): %w", err)
 		}
@@ -30,11 +30,12 @@ func (s *Service) Process(ctx context.Context, missionEventsCount uint16) error 
 			}
 
 			// I don't want to create return mission type cause I need to store previous type somehow
-			if missionEvent.IsReturning == true {
+			if missionEvent.IsReturning {
 				err := s.returnMission(ctx, missionEvent, txStorages)
 				if err != nil {
 					return fmt.Errorf("s.returnMission(): %w", err)
 				}
+
 				break
 			}
 

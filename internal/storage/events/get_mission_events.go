@@ -1,4 +1,4 @@
-package mission
+package events
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *MissionStorage) GetMissionEventsForUpdate(ctx context.Context, missionEventsCount uint16) ([]models.MissionEvent, error) {
+func (r *EventsStorage) GetMissionEvents(ctx context.Context, missionEventsCount uint16) ([]models.MissionEvent, error) {
 	const getMissionEventsQuery = `
 		SELECT
 			id,
@@ -37,8 +37,11 @@ func (r *MissionStorage) GetMissionEventsForUpdate(ctx context.Context, missionE
 	}
 	defer rows.Close()
 
-	var missionEvents []models.MissionEvent
-	var fleet []fleetUnit
+	var (
+		missionEvents []models.MissionEvent
+		fleet         []fleetUnit
+	)
+
 	for rows.Next() {
 		var me models.MissionEvent
 

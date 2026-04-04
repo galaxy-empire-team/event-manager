@@ -20,7 +20,9 @@ func (r *PlanetStorage) GetResourcesForUpdate(ctx context.Context, planetID uuid
 		WHERE planet_id = $1
 		FOR UPDATE;
 	`
+
 	var resources models.Resources
+
 	err := r.DB.QueryRow(ctx, getResourcesQuery, planetID).Scan(
 		&resources.Metal,
 		&resources.Crystal,

@@ -1,4 +1,4 @@
-package research
+package events
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (r *ResearchStorage) GetResearchEvents(ctx context.Context, researchEventsCount uint16) ([]models.ResearchEvent, error) {
+func (r *EventsStorage) GetResearchEvents(ctx context.Context, researchEventsCount uint16) ([]models.ResearchEvent, error) {
 	const getResearchEventsQuery = `
 		SELECT
 			id,
@@ -30,6 +30,7 @@ func (r *ResearchStorage) GetResearchEvents(ctx context.Context, researchEventsC
 	defer rows.Close()
 
 	var researchEvents []models.ResearchEvent
+
 	for rows.Next() {
 		var re models.ResearchEvent
 

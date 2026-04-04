@@ -18,6 +18,7 @@ func (r *ResearchStorage) GetUserResearches(ctx context.Context, userID uuid.UUI
 	`
 
 	var researches []consts.ResearchID
+
 	rows, err := r.DB.Query(ctx, getAllUserResearchesQuery, userID)
 	if err != nil {
 		return nil, fmt.Errorf("DB.Query.Scan(): %w", err)
@@ -26,6 +27,7 @@ func (r *ResearchStorage) GetUserResearches(ctx context.Context, userID uuid.UUI
 
 	for rows.Next() {
 		var researchID consts.ResearchID
+
 		err = rows.Scan(&researchID)
 		if err != nil {
 			return nil, fmt.Errorf("DB.QueryRow.Scan(): %w", err)

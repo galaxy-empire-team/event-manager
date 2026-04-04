@@ -156,7 +156,7 @@ func (s *Service) createAttackNotificationEvent(ctx context.Context, users userI
 	return nil
 }
 
-// calcAttackResult is mock function that calculates the result of the attack
+// calcAttackResult is mock function that calculates the result of the attack.
 func calcAttackResult(attackerFleet, defenderFleet []models.FleetUnit) ([]models.FleetUnit, []models.FleetUnit, bool) {
 	attackerFleetLeft := make([]models.FleetUnit, 0, len(attackerFleet))
 	defenderFleetLeft := make([]models.FleetUnit, 0, len(defenderFleet))
@@ -183,6 +183,7 @@ func calcAttackResult(attackerFleet, defenderFleet []models.FleetUnit) ([]models
 
 func prepareFleetForNotification(fleetBefore []models.FleetUnit, fleetAfter []models.FleetUnit) []attackFleetUnit {
 	var notificationAttackerFleet []attackFleetUnit
+
 	for _, unit := range fleetBefore {
 		result, _ := lo.Find(fleetAfter, func(x models.FleetUnit) bool {
 			return x.ID == unit.ID

@@ -24,6 +24,7 @@ func StartWorker(ctx context.Context, cfg config.Worker, service service, logger
 
 	// Distribute jobs within a second to make event processing more consistent.
 	const millisecondInSecond = 1000
+
 	delay := millisecondInSecond / int(cfg.ThreadCount)
 
 	for range cfg.ThreadCount {
