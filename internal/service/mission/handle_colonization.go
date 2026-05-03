@@ -3,6 +3,7 @@ package mission
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -11,30 +12,25 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
-func (s *Service) handleColonization(ctx context.Context, missionEvent models.MissionEvent, storage TxStorages) error {
-	var colonizationErr string
-
-	colonized, err := storage.ColonizePlanet(ctx, missionEvent)
-	if err != nil {
-		return fmt.Errorf("storage.ColonizePlanet(): %w", err)
-	}
-
-	if !colonized {
-		colonizationErr = "Planet is already colonized"
-	}
-
-	// --- create colonization notification ---
+func (s *Service) handleColonization(ctx context.Context, colonizationEvent models.MissionEvent, storage TxStorages) error {
 	notificationMsg := colonizationNotification{
-		UserID: missionEvent.UserID,
 		Planet: colonizationCoordinates{
-			X: missionEvent.PlanetTo.X,
-			Y: missionEvent.PlanetTo.Y,
-			Z: missionEvent.PlanetTo.Z,
+			X: colonizationEvent.PlanetTo.X,
+			Y: colonizationEvent.PlanetTo.Y,
+			Z: colonizationEvent.PlanetTo.Z,
 		},
-		Err: colonizationErr,
 	}
 
-	err = s.createColonizationNotificationEvent(ctx, notificationMsg, storage)
+	err := s.bridgeAPIClient.ColonizePlanet(ctx, colonizationEvent.UserID, colonizationEvent)
+	if err != nil {
+		if !errors.Is(err, models.ErrPlanetCoordinatesAlreadyTaken) {
+			return fmt.Errorf("s.bridgeAPIClient.ColonizePlanet(): %w", err)
+		}
+
+		notificationMsg.Err = "Planet coordinates already taken"
+	}
+
+	err = s.createColonizationNotificationEvent(ctx, colonizationEvent.UserID, notificationMsg, storage)
 	if err != nil {
 		return fmt.Errorf("storage.CreateColonizationNotification(): %w", err)
 	}
@@ -43,9 +39,8 @@ func (s *Service) handleColonization(ctx context.Context, missionEvent models.Mi
 }
 
 type colonizationNotification struct {
-	UserID uuid.UUID               `json:"user_id"`
 	Planet colonizationCoordinates `json:"planet"`
-	Err    string                  `json:"err"`
+	Err    string                  `json:"error,omitempty"`
 }
 
 type colonizationCoordinates struct {
@@ -54,7 +49,7 @@ type colonizationCoordinates struct {
 	Z consts.PlanetPositionZ `json:"z"`
 }
 
-func (s *Service) createColonizationNotificationEvent(ctx context.Context, colonizationNotification colonizationNotification, storage TxStorages) error {
+func (s *Service) createColonizationNotificationEvent(ctx context.Context, userID uuid.UUID, colonizationNotification colonizationNotification, storage TxStorages) error {
 	nID, err := s.registry.GetNotificationIDByType(consts.NotificationTypeColonize)
 	if err != nil {
 		return fmt.Errorf("s.registry.GetNotificationIDByType(): %w", err)
@@ -66,7 +61,7 @@ func (s *Service) createColonizationNotificationEvent(ctx context.Context, colon
 	}
 
 	err = storage.SaveNotificationEvents(ctx, []models.NotificationEvent{{
-		UserID:         colonizationNotification.UserID,
+		UserID:         userID,
 		NotificationID: nID,
 		Data:           msg,
 	},

@@ -13,8 +13,8 @@ import (
 
 func (c *Client) UpdatePlanetResources(ctx context.Context, userID uuid.UUID, planetID uuid.UUID, updatedTime time.Time) error {
 	_, err := c.planetServiceClient.UpdatePlanetResources(ctx, &planetpb.UpdatePlanetResourcesRequest{
-		UserId:   userID.String(),
-		PlanetId: planetID.String(),
+		UserID:   userID.String(),
+		PlanetID: planetID.String(),
 		Time:     timestamppb.New(updatedTime),
 	})
 	if err != nil {

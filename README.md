@@ -24,7 +24,7 @@ A user starts a build, and the Bridge-API generates and posts a corresponding ev
 A user starts a research, and the Bridge-API generates and posts a corresponding event to the **event_researches** table.
 
 #### Fleet construction events
-A user starts a research, and the Bridge-API generates and posts a corresponding event to the **event_fleet_constructions** table.
+A user starts a fleet construction, and the Bridge-API generates and posts a corresponding event to the **event_fleet_constructions** table.
 
 ## Architecture
 Top level architecture is present on the diagram. 
@@ -34,7 +34,7 @@ Top level architecture is present on the diagram.
 To start working with the server, set up the Postgres database by applying migrations from [galaxy-empire-team/migrations](https://github.com/galaxy-empire-team/migrations). After installing the migrations, launch the project using the variables listed below. Workers will automatically start.
 
 ## Env
-An example of environment variables required by an API:
+An example of environment variables required by the service:
 ```
 // Optional variables
 APP_LOG_LEVEL=info

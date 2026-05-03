@@ -20,6 +20,7 @@ func (r *EventsStorage) GetMissionEvents(ctx context.Context, missionEventsCount
 			planet_to_y,
 			planet_to_z,
 			fleet,
+			cargo,
 			is_returning,
 			started_at,
 			finished_at
@@ -40,6 +41,7 @@ func (r *EventsStorage) GetMissionEvents(ctx context.Context, missionEventsCount
 	var (
 		missionEvents []models.MissionEvent
 		fleet         []fleetUnit
+		resources     resources
 	)
 
 	for rows.Next() {
@@ -54,6 +56,7 @@ func (r *EventsStorage) GetMissionEvents(ctx context.Context, missionEventsCount
 			&me.PlanetTo.Y,
 			&me.PlanetTo.Z,
 			&fleet,
+			&resources,
 			&me.IsReturning,
 			&me.StartedAt,
 			&me.FinishedAt,
@@ -68,6 +71,12 @@ func (r *EventsStorage) GetMissionEvents(ctx context.Context, missionEventsCount
 				Count: f.Count,
 			}
 		})
+
+		me.Resources = models.Resources{
+			Metal:   resources.Metal,
+			Crystal: resources.Crystal,
+			Gas:     resources.Gas,
+		}
 
 		missionEvents = append(missionEvents, me)
 	}

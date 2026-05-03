@@ -19,7 +19,6 @@ type TxStorages interface {
 	DeleteMissionEvents(ctx context.Context, eventsToDelete []models.MissionEvent) error
 
 	// planet storage
-	ColonizePlanet(ctx context.Context, colonizeEvents models.MissionEvent) (colonized bool, err error)
 	GetPlanetInfoByCoordinates(ctx context.Context, planetFrom models.Coordinates) (models.Planet, error)
 	GetPlanetInfoByID(ctx context.Context, planetID uuid.UUID) (models.Planet, error)
 	GetResources(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
@@ -43,6 +42,7 @@ type txManager interface {
 }
 
 type bridgeAPIClient interface {
+	ColonizePlanet(ctx context.Context, userID uuid.UUID, colonizeEvent models.MissionEvent) error
 	UpdatePlanetResources(ctx context.Context, userID uuid.UUID, planetID uuid.UUID, updatedTime time.Time) error
 }
 
