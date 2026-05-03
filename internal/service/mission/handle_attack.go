@@ -30,7 +30,15 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 	}
 
 	// --- calculate attack result ---
-	updatedAttackerFleet, updatedDefenderFleet, attackerWins := calcAttackResult(attackerFleet, defenderFleet)
+	attackResult, err := s.calcAttackResult(ctx, attackSetup{
+		attackerID:    attackerPlanet.UserID,
+		defenderID:    defenderPlanet.UserID,
+		attackerFleet: attackerFleet,
+		defenderFleet: defenderFleet,
+	}, storage)
+	if err != nil {
+		return fmt.Errorf("s.calcAttackResult(): %w", err)
+	}
 
 	// --- save attack result ---
 	err = storage.CreateMissionEvent(ctx, models.MissionEvent{
@@ -38,7 +46,7 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 		UserID:      missionEvent.UserID,
 		PlanetFrom:  defenderPlanet.ID,
 		PlanetTo:    attackerPlanet.Coordinates,
-		Fleet:       updatedAttackerFleet,
+		Fleet:       attackResult.attackerFleetLeft,
 		IsReturning: true,
 		StartedAt:   missionEvent.FinishedAt,
 		FinishedAt:  missionEvent.FinishedAt.Add(missionEvent.FinishedAt.Sub(missionEvent.StartedAt)),
@@ -47,14 +55,14 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 		return fmt.Errorf("storage.CreateMissionEvent(): %w", err)
 	}
 
-	err = storage.SetPlanetFleet(ctx, defenderPlanet.ID, updatedDefenderFleet)
+	err = storage.SetPlanetFleet(ctx, defenderPlanet.ID, attackResult.defenderFleetLeft)
 	if err != nil {
 		return fmt.Errorf("storage.SetPlanetFleet(%s): %w", defenderPlanet.ID.String(), err)
 	}
 
 	// --- create attack notifications for both attacker and defender ---
 	notificationMsg := attackNotification{
-		AttackerWins: attackerWins,
+		AttackerWins: attackResult.attackerWins,
 		Cargo: resources{
 			Metal:   0,
 			Crystal: 0,
@@ -67,7 +75,7 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 				Y: attackerPlanet.Coordinates.Y,
 				Z: attackerPlanet.Coordinates.Z,
 			},
-			Fleet: prepareFleetForNotification(attackerFleet, updatedAttackerFleet),
+			Fleet: prepareFleetForNotification(attackerFleet, attackResult.attackerFleetLeft),
 		},
 		Defender: attackInfo{
 			Login: defenderPlanet.UserLogin,
@@ -76,7 +84,7 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 				Y: defenderPlanet.Coordinates.Y,
 				Z: defenderPlanet.Coordinates.Z,
 			},
-			Fleet: prepareFleetForNotification(defenderFleet, updatedDefenderFleet),
+			Fleet: prepareFleetForNotification(defenderFleet, attackResult.defenderFleetLeft),
 		},
 	}
 
@@ -154,31 +162,6 @@ func (s *Service) createAttackNotificationEvent(ctx context.Context, users userI
 	}
 
 	return nil
-}
-
-// calcAttackResult is mock function that calculates the result of the attack.
-func calcAttackResult(attackerFleet, defenderFleet []models.FleetUnit) ([]models.FleetUnit, []models.FleetUnit, bool) {
-	attackerFleetLeft := make([]models.FleetUnit, 0, len(attackerFleet))
-	defenderFleetLeft := make([]models.FleetUnit, 0, len(defenderFleet))
-
-	// implement algorithm later
-	attackerWins := true
-
-	for _, unit := range attackerFleet {
-		attackerFleetLeft = append(attackerFleetLeft, models.FleetUnit{
-			ID:    unit.ID,
-			Count: unit.Count / 2,
-		})
-	}
-
-	for _, unit := range defenderFleet {
-		defenderFleetLeft = append(defenderFleetLeft, models.FleetUnit{
-			ID:    unit.ID,
-			Count: unit.Count / 2,
-		})
-	}
-
-	return attackerFleetLeft, defenderFleetLeft, attackerWins
 }
 
 func prepareFleetForNotification(fleetBefore []models.FleetUnit, fleetAfter []models.FleetUnit) []attackFleetUnit {

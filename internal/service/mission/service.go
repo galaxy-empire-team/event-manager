@@ -12,6 +12,7 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/models"
 )
 
+//go:generate mockery --name=TxStorages --filename=tx_storages.go --exported --with-expecter
 type TxStorages interface {
 	// mission storage
 	CreateMissionEvent(ctx context.Context, missionEvent models.MissionEvent) error
@@ -35,6 +36,7 @@ type TxStorages interface {
 
 	// research storage
 	GetUserResearches(ctx context.Context, userID uuid.UUID) ([]consts.ResearchID, error)
+	GetUserResearchesByTypes(ctx context.Context, userID uuid.UUID, researchTypes []consts.ResearchType) (map[consts.ResearchType]consts.ResearchID, error)
 }
 
 type txManager interface {
@@ -46,11 +48,13 @@ type bridgeAPIClient interface {
 	UpdatePlanetResources(ctx context.Context, userID uuid.UUID, planetID uuid.UUID, updatedTime time.Time) error
 }
 
+//go:generate mockery --name=registryProvider --filename=registry_provider.go --exported --with-expecter
 type registryProvider interface {
 	GetMissionTypeByID(missionID consts.MissionID) (consts.MissionType, error)
 	GetMissionIDByType(missionType consts.MissionType) (consts.MissionID, error)
 	GetNotificationIDByType(notificationType consts.NotificationType) (consts.NotificationID, error)
 	GetResearchStatsByID(researchID consts.ResearchID) (registry.ResearchStats, error)
+	GetFleetUnitStatsByID(fleetUnitID consts.FleetUnitID) (registry.FleetUnitStats, error)
 }
 
 type Service struct {
