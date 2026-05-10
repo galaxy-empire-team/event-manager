@@ -11,13 +11,13 @@ import (
 
 func (r *NotificationStorage) SaveNotificationEvents(ctx context.Context, notificationEvents []models.NotificationEvent) error {
 	const createNotificationQuery = `
-		INSERT INTO session_beta.user_notifications (user_id, notification_id, data)
-		VALUES ($1, $2, $3);
+		INSERT INTO session_beta.user_notifications (user_id, version, notification_id, data)
+		VALUES ($1, $2, $3, $4);
 	`
 
 	var batch pgx.Batch
 	for _, event := range notificationEvents {
-		batch.Queue(createNotificationQuery, event.UserID, event.NotificationID, event.Data)
+		batch.Queue(createNotificationQuery, event.UserID, event.Version, event.NotificationID, event.Data)
 	}
 
 	br := r.DB.SendBatch(ctx, &batch)

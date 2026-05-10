@@ -20,10 +20,6 @@ type coordinates struct {
 	Z consts.PlanetPositionZ
 }
 
-type fleet struct {
-	Fleet []fleetUnit `json:"fleet"`
-}
-
 type fleetUnit struct {
 	ID    consts.FleetUnitID `json:"id"`
 	Count uint64             `json:"count"`

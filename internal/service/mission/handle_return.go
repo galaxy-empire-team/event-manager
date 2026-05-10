@@ -9,9 +9,10 @@ import (
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
+	"github.com/galaxy-empire-team/event-manager/pkg/notifications"
 )
 
-const StatusFinished = "Finished"
+const StatusFinished = "finished"
 
 func (s *Service) returnMission(ctx context.Context, missionEvent models.MissionEvent, storage TxStorages) error {
 	planetInfo, err := storage.GetPlanetInfoByCoordinates(ctx, missionEvent.PlanetTo)
@@ -30,9 +31,9 @@ func (s *Service) returnMission(ctx context.Context, missionEvent models.Mission
 		return fmt.Errorf("s.registry.GetMissionTypeByID(): %w", err)
 	}
 
-	notificationMsg := returnNotification{
+	notificationMsg := notifications.ReturnV1{
 		MissionType: mType,
-		Msg:         StatusFinished,
+		Status:      StatusFinished,
 	}
 
 	err = s.createReturnNotification(ctx, missionEvent.UserID, notificationMsg, storage)
@@ -43,12 +44,7 @@ func (s *Service) returnMission(ctx context.Context, missionEvent models.Mission
 	return nil
 }
 
-type returnNotification struct {
-	MissionType consts.MissionType `json:"mission_type"`
-	Msg         string             `json:"status"`
-}
-
-func (s *Service) createReturnNotification(ctx context.Context, userID uuid.UUID, returnNotification returnNotification, storage TxStorages) error {
+func (s *Service) createReturnNotification(ctx context.Context, userID uuid.UUID, returnNotification notifications.ReturnV1, storage TxStorages) error {
 	nID, err := s.registry.GetNotificationIDByType(consts.NotificationTypeReturn)
 	if err != nil {
 		return fmt.Errorf("s.registry.GetNotificationIDByType(): %w", err)
@@ -59,8 +55,10 @@ func (s *Service) createReturnNotification(ctx context.Context, userID uuid.UUID
 		return fmt.Errorf("json.Marshal(): %w", err)
 	}
 
+	const returnNotificationVersion = 1
 	err = storage.SaveNotificationEvents(ctx, []models.NotificationEvent{{
 		UserID:         userID,
+		Version:        returnNotificationVersion,
 		NotificationID: nID,
 		Data:           msg,
 	}})

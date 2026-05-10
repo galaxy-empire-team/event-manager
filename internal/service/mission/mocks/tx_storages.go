@@ -169,12 +169,12 @@ func (_c *TxStorages_DeleteMissionEvents_Call) RunAndReturn(run func(context.Con
 	return _c
 }
 
-// GetAllBuildings provides a mock function with given fields: ctx, planetID
-func (_m *TxStorages) GetAllBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error) {
+// GetBuildings provides a mock function with given fields: ctx, planetID
+func (_m *TxStorages) GetBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error) {
 	ret := _m.Called(ctx, planetID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetAllBuildings")
+		panic("no return value specified for GetBuildings")
 	}
 
 	var r0 []consts.BuildingID
@@ -199,31 +199,31 @@ func (_m *TxStorages) GetAllBuildings(ctx context.Context, planetID uuid.UUID) (
 	return r0, r1
 }
 
-// TxStorages_GetAllBuildings_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAllBuildings'
-type TxStorages_GetAllBuildings_Call struct {
+// TxStorages_GetBuildings_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetBuildings'
+type TxStorages_GetBuildings_Call struct {
 	*mock.Call
 }
 
-// GetAllBuildings is a helper method to define mock.On call
+// GetBuildings is a helper method to define mock.On call
 //   - ctx context.Context
 //   - planetID uuid.UUID
-func (_e *TxStorages_Expecter) GetAllBuildings(ctx interface{}, planetID interface{}) *TxStorages_GetAllBuildings_Call {
-	return &TxStorages_GetAllBuildings_Call{Call: _e.mock.On("GetAllBuildings", ctx, planetID)}
+func (_e *TxStorages_Expecter) GetBuildings(ctx interface{}, planetID interface{}) *TxStorages_GetBuildings_Call {
+	return &TxStorages_GetBuildings_Call{Call: _e.mock.On("GetBuildings", ctx, planetID)}
 }
 
-func (_c *TxStorages_GetAllBuildings_Call) Run(run func(ctx context.Context, planetID uuid.UUID)) *TxStorages_GetAllBuildings_Call {
+func (_c *TxStorages_GetBuildings_Call) Run(run func(ctx context.Context, planetID uuid.UUID)) *TxStorages_GetBuildings_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(uuid.UUID))
 	})
 	return _c
 }
 
-func (_c *TxStorages_GetAllBuildings_Call) Return(_a0 []consts.BuildingID, _a1 error) *TxStorages_GetAllBuildings_Call {
+func (_c *TxStorages_GetBuildings_Call) Return(_a0 []consts.BuildingID, _a1 error) *TxStorages_GetBuildings_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *TxStorages_GetAllBuildings_Call) RunAndReturn(run func(context.Context, uuid.UUID) ([]consts.BuildingID, error)) *TxStorages_GetAllBuildings_Call {
+func (_c *TxStorages_GetBuildings_Call) RunAndReturn(run func(context.Context, uuid.UUID) ([]consts.BuildingID, error)) *TxStorages_GetBuildings_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -23,9 +23,9 @@ func (c *Client) ColonizePlanet(ctx context.Context, userID uuid.UUID, event mod
 			Z: uint32(event.PlanetTo.Z),
 		},
 		Resources: &planetpb.Resources{
-			Metal:   event.Resources.Metal,
-			Crystal: event.Resources.Crystal,
-			Gas:     event.Resources.Gas,
+			Metal:   event.Cargo.Metal,
+			Crystal: event.Cargo.Crystal,
+			Gas:     event.Cargo.Gas,
 		},
 	})
 	if err != nil {

@@ -303,6 +303,62 @@ func (_c *RegistryProvider_GetResearchStatsByID_Call) RunAndReturn(run func(cons
 	return _c
 }
 
+// GetResearchZeroLvlIDByType provides a mock function with given fields: researchType
+func (_m *RegistryProvider) GetResearchZeroLvlIDByType(researchType consts.ResearchType) (consts.ResearchID, error) {
+	ret := _m.Called(researchType)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetResearchZeroLvlIDByType")
+	}
+
+	var r0 consts.ResearchID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(consts.ResearchType) (consts.ResearchID, error)); ok {
+		return rf(researchType)
+	}
+	if rf, ok := ret.Get(0).(func(consts.ResearchType) consts.ResearchID); ok {
+		r0 = rf(researchType)
+	} else {
+		r0 = ret.Get(0).(consts.ResearchID)
+	}
+
+	if rf, ok := ret.Get(1).(func(consts.ResearchType) error); ok {
+		r1 = rf(researchType)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// RegistryProvider_GetResearchZeroLvlIDByType_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetResearchZeroLvlIDByType'
+type RegistryProvider_GetResearchZeroLvlIDByType_Call struct {
+	*mock.Call
+}
+
+// GetResearchZeroLvlIDByType is a helper method to define mock.On call
+//   - researchType consts.ResearchType
+func (_e *RegistryProvider_Expecter) GetResearchZeroLvlIDByType(researchType interface{}) *RegistryProvider_GetResearchZeroLvlIDByType_Call {
+	return &RegistryProvider_GetResearchZeroLvlIDByType_Call{Call: _e.mock.On("GetResearchZeroLvlIDByType", researchType)}
+}
+
+func (_c *RegistryProvider_GetResearchZeroLvlIDByType_Call) Run(run func(researchType consts.ResearchType)) *RegistryProvider_GetResearchZeroLvlIDByType_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(consts.ResearchType))
+	})
+	return _c
+}
+
+func (_c *RegistryProvider_GetResearchZeroLvlIDByType_Call) Return(_a0 consts.ResearchID, _a1 error) *RegistryProvider_GetResearchZeroLvlIDByType_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *RegistryProvider_GetResearchZeroLvlIDByType_Call) RunAndReturn(run func(consts.ResearchType) (consts.ResearchID, error)) *RegistryProvider_GetResearchZeroLvlIDByType_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewRegistryProvider creates a new instance of RegistryProvider. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewRegistryProvider(t interface {

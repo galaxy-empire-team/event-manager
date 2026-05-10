@@ -31,7 +31,7 @@ type MissionEvent struct {
 	PlanetFrom  uuid.UUID
 	PlanetTo    Coordinates
 	Fleet       []FleetUnit
-	Resources   Resources
+	Cargo       Resources
 	IsReturning bool
 	StartedAt   time.Time
 	FinishedAt  time.Time
@@ -48,6 +48,7 @@ type FleetConstructionEvent struct {
 
 type NotificationEvent struct {
 	UserID         uuid.UUID
+	Version        uint8
 	NotificationID consts.NotificationID
 	Data           []byte
 }

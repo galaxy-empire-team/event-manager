@@ -164,7 +164,10 @@ func (s *Service) getResearchBonuses(ctx context.Context, userID uuid.UUID, stor
 
 	weaponTechID, ok := researchIDs[consts.ResearchTypeWeaponTech]
 	if !ok {
-		return userResearchBonuses{}, fmt.Errorf("weapon tech research not found for user %s", userID.String())
+		weaponTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeWeaponTech)
+		if err != nil {
+			return userResearchBonuses{}, fmt.Errorf("registry.GetResearchZeroLvlIDByType(weapon tech): %w", err)
+		}
 	}
 
 	weaponTechStats, err := s.registry.GetResearchStatsByID(weaponTechID)
@@ -174,7 +177,10 @@ func (s *Service) getResearchBonuses(ctx context.Context, userID uuid.UUID, stor
 
 	armorTechID, ok := researchIDs[consts.ResearchTypeArmorTech]
 	if !ok {
-		return userResearchBonuses{}, fmt.Errorf("armor tech research not found for user %s", userID.String())
+		armorTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeArmorTech)
+		if err != nil {
+			return userResearchBonuses{}, fmt.Errorf("registry.GetResearchZeroLvlIDByType(armor tech): %w", err)
+		}
 	}
 
 	armorTechStats, err := s.registry.GetResearchStatsByID(armorTechID)

@@ -9,16 +9,16 @@ import (
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 )
 
-// GetAllBuildings retrieves all buildings information from the target planet.
-func (s *PlanetStorage) GetAllBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error) {
-	const getAllBuildingsQuery = `
+// GetBuildings retrieves all buildings information from the target planet.
+func (s *PlanetStorage) GetBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error) {
+	const GetBuildingsQuery = `
 		SELECT 
 			building_id
 		FROM session_beta.planet_buildings
 		WHERE planet_id = $1;
 	`
 
-	rows, err := s.DB.Query(ctx, getAllBuildingsQuery, planetID)
+	rows, err := s.DB.Query(ctx, GetBuildingsQuery, planetID)
 	if err != nil {
 		return nil, fmt.Errorf("DB.Query(): %w", err)
 	}

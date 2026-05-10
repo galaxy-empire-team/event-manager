@@ -2,6 +2,7 @@ package mission
 
 import (
 	"context"
+	"math/rand"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,7 +29,7 @@ type TxStorages interface {
 	GetPlanetFleetForUpdate(ctx context.Context, planetID uuid.UUID) ([]models.FleetUnit, error)
 	SetPlanetFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
 	AddFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
-	GetAllBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error)
+	GetBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error)
 	GetPlanetMinesProduction(ctx context.Context, planetID uuid.UUID) (map[consts.BuildingType]uint64, error)
 
 	// notification storage
@@ -54,13 +55,20 @@ type registryProvider interface {
 	GetMissionIDByType(missionType consts.MissionType) (consts.MissionID, error)
 	GetNotificationIDByType(notificationType consts.NotificationType) (consts.NotificationID, error)
 	GetResearchStatsByID(researchID consts.ResearchID) (registry.ResearchStats, error)
+	GetResearchZeroLvlIDByType(researchType consts.ResearchType) (consts.ResearchID, error)
 	GetFleetUnitStatsByID(fleetUnitID consts.FleetUnitID) (registry.FleetUnitStats, error)
+}
+
+//go:generate mockery --name=randGenerator --filename=rand_generator.go --exported --with-expecter
+type randGenerator interface {
+	Intn(n int) int
 }
 
 type Service struct {
 	txManager       txManager
 	bridgeAPIClient bridgeAPIClient
 	registry        registryProvider
+	randGenerator   randGenerator
 	logger          *zap.Logger
 }
 
@@ -69,6 +77,7 @@ func New(txManager txManager, bridgeAPIClient bridgeAPIClient, registryProvider 
 		txManager:       txManager,
 		bridgeAPIClient: bridgeAPIClient,
 		registry:        registryProvider,
+		randGenerator:   rand.New(rand.NewSource(time.Now().UnixNano())),
 		logger:          logger,
 	}
 }

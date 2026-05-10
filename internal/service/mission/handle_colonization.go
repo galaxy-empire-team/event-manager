@@ -10,11 +10,12 @@ import (
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
+	"github.com/galaxy-empire-team/event-manager/pkg/notifications"
 )
 
 func (s *Service) handleColonization(ctx context.Context, colonizationEvent models.MissionEvent, storage TxStorages) error {
-	notificationMsg := colonizationNotification{
-		Planet: colonizationCoordinates{
+	notificationMsg := notifications.ColonizationV1{
+		Planet: notifications.Coordinates{
 			X: colonizationEvent.PlanetTo.X,
 			Y: colonizationEvent.PlanetTo.Y,
 			Z: colonizationEvent.PlanetTo.Z,
@@ -38,18 +39,7 @@ func (s *Service) handleColonization(ctx context.Context, colonizationEvent mode
 	return nil
 }
 
-type colonizationNotification struct {
-	Planet colonizationCoordinates `json:"planet"`
-	Err    string                  `json:"error,omitempty"`
-}
-
-type colonizationCoordinates struct {
-	X consts.PlanetPositionX `json:"x"`
-	Y consts.PlanetPositionY `json:"y"`
-	Z consts.PlanetPositionZ `json:"z"`
-}
-
-func (s *Service) createColonizationNotificationEvent(ctx context.Context, userID uuid.UUID, colonizationNotification colonizationNotification, storage TxStorages) error {
+func (s *Service) createColonizationNotificationEvent(ctx context.Context, userID uuid.UUID, colonizationNotification notifications.ColonizationV1, storage TxStorages) error {
 	nID, err := s.registry.GetNotificationIDByType(consts.NotificationTypeColonize)
 	if err != nil {
 		return fmt.Errorf("s.registry.GetNotificationIDByType(): %w", err)
@@ -60,8 +50,10 @@ func (s *Service) createColonizationNotificationEvent(ctx context.Context, userI
 		return fmt.Errorf("json.Marshal(): %w", err)
 	}
 
+	const colonizationNotificationVersion = 1
 	err = storage.SaveNotificationEvents(ctx, []models.NotificationEvent{{
 		UserID:         userID,
+		Version:        colonizationNotificationVersion,
 		NotificationID: nID,
 		Data:           msg,
 	},

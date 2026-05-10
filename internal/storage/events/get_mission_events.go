@@ -72,7 +72,7 @@ func (r *EventsStorage) GetMissionEvents(ctx context.Context, missionEventsCount
 			}
 		})
 
-		me.Resources = models.Resources{
+		me.Cargo = models.Resources{
 			Metal:   resources.Metal,
 			Crystal: resources.Crystal,
 			Gas:     resources.Gas,
