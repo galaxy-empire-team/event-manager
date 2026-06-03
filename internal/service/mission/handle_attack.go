@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/samber/lo"
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
@@ -19,34 +20,41 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 		return fmt.Errorf("storage.GetPlanetInfoByID(): %w", err)
 	}
 
-	attackerFleet := missionEvent.Fleet
-
-	defenderPlanet, err := storage.GetPlanetInfoByCoordinates(ctx, missionEvent.PlanetTo)
+	attackerResearchBonuses, err := s.getResearchBonuses(ctx, attackerPlanet.UserID, storage)
 	if err != nil {
-		return fmt.Errorf("storage.GetPlanetInfoByCoordinates(): %w", err)
+		return fmt.Errorf("getResearchBonuses(attacker): %w", err)
 	}
 
-	defenderFleet, err := storage.GetPlanetFleetForUpdate(ctx, defenderPlanet.ID)
+	defender, err := s.getDefenderPlanet(ctx, missionEvent, storage)
 	if err != nil {
-		return fmt.Errorf("storage.GetPlanetFleetForUpdate(): %w", err)
+		return fmt.Errorf("s.getDefenderPlanet(): %w", err)
 	}
 
 	// --- calculate attack result ---
-	attackResult, err := s.calcAttackResult(ctx, attackSetup{
-		attackerID:    attackerPlanet.UserID,
-		defenderID:    defenderPlanet.UserID,
-		attackerFleet: attackerFleet,
-		defenderFleet: defenderFleet,
-	}, storage)
+	attackResult, err := s.calcAttackResult(attackSetup{
+		attackerFleet:      missionEvent.Fleet,
+		attackerResearches: attackerResearchBonuses,
+		defenderFleet:      defender.fleet,
+		defenderResearches: defender.researches,
+	})
 	if err != nil {
 		return fmt.Errorf("s.calcAttackResult(): %w", err)
 	}
 
 	var gainedResources models.Resources
 	if attackResult.attackerWins {
-		gainedResources, err = s.stealResources(ctx, defenderPlanet, attackerFleet, storage)
-		if err != nil {
-			return fmt.Errorf("s.stealResources(): %w", err)
+		if s.isPlanetNPC(missionEvent.PlanetTo.Z) {
+			fleetCapactity, err := s.calcFleetCapacity(missionEvent.Fleet)
+			if err != nil {
+				return fmt.Errorf("s.calcFleetCapacity(): %w", err)
+			}
+
+			gainedResources = s.fillFleetCargo(defender.planet.Resources, fleetCapactity).gained
+		} else {
+			gainedResources, err = s.stealResources(ctx, defender.planet, missionEvent.Fleet, storage)
+			if err != nil {
+				return fmt.Errorf("s.stealResources(): %w", err)
+			}
 		}
 	}
 
@@ -54,7 +62,7 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 	err = storage.CreateMissionEvent(ctx, models.MissionEvent{
 		MissionID:   missionEvent.MissionID,
 		UserID:      missionEvent.UserID,
-		PlanetFrom:  defenderPlanet.ID,
+		PlanetFrom:  defender.planet.ID,
 		PlanetTo:    attackerPlanet.Coordinates,
 		Fleet:       attackResult.attackerFleetLeft,
 		Cargo:       gainedResources,
@@ -66,9 +74,11 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 		return fmt.Errorf("storage.CreateMissionEvent(): %w", err)
 	}
 
-	err = storage.SetPlanetFleet(ctx, defenderPlanet.ID, attackResult.defenderFleetLeft)
-	if err != nil {
-		return fmt.Errorf("storage.SetPlanetFleet(%s): %w", defenderPlanet.ID.String(), err)
+	if !s.isPlanetNPC(missionEvent.PlanetTo.Z) {
+		err = storage.SetPlanetFleet(ctx, attackerPlanet.ID, attackResult.attackerFleetLeft)
+		if err != nil {
+			return fmt.Errorf("storage.SetPlanetFleet(%s): %w", attackerPlanet.ID.String(), err)
+		}
 	}
 
 	// --- create attack notifications for both attacker and defender ---
@@ -86,22 +96,22 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 				Y: attackerPlanet.Coordinates.Y,
 				Z: attackerPlanet.Coordinates.Z,
 			},
-			Fleet: prepareAttackFleetNotification(attackerFleet, attackResult.attackerFleetLeft),
+			Fleet: prepareAttackFleetNotification(missionEvent.Fleet, attackResult.attackerFleetLeft),
 		},
 		Defender: notifications.AttackInfo{
-			Login: defenderPlanet.UserLogin,
+			Login: defender.planet.UserLogin,
 			Planet: notifications.Coordinates{
-				X: defenderPlanet.Coordinates.X,
-				Y: defenderPlanet.Coordinates.Y,
-				Z: defenderPlanet.Coordinates.Z,
+				X: missionEvent.PlanetTo.X,
+				Y: missionEvent.PlanetTo.Y,
+				Z: missionEvent.PlanetTo.Z,
 			},
-			Fleet: prepareAttackFleetNotification(defenderFleet, attackResult.defenderFleetLeft),
+			Fleet: prepareAttackFleetNotification(defender.fleet, attackResult.defenderFleetLeft),
 		},
 	}
 
 	users := userIDPair{
 		Attacker: attackerPlanet.UserID,
-		Defender: defenderPlanet.UserID,
+		Defender: defender.planet.UserID,
 	}
 
 	err = s.createAttackNotificationEvent(ctx, users, notificationMsg, storage)
@@ -156,12 +166,15 @@ func (s *Service) createAttackNotificationEvent(ctx context.Context, users userI
 			NotificationID: nID,
 			Data:           msg,
 		},
-		{
+	}
+
+	if users.Defender != uuid.Nil {
+		notificationEvents = append(notificationEvents, models.NotificationEvent{
 			UserID:         users.Defender,
 			Version:        attackNotificationVersion,
 			NotificationID: nID,
 			Data:           msg,
-		},
+		})
 	}
 
 	err = storage.SaveNotificationEvents(ctx, notificationEvents)

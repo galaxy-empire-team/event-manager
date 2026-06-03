@@ -14,6 +14,7 @@ type Planet struct {
 	ID          uuid.UUID
 	UserID      uuid.UUID
 	UserLogin   string
+	Resources   Resources
 	Coordinates Coordinates
 }
 

@@ -23,6 +23,7 @@ type TxStorages interface {
 	// planet storage
 	GetPlanetInfoByCoordinates(ctx context.Context, planetFrom models.Coordinates) (models.Planet, error)
 	GetPlanetInfoByID(ctx context.Context, planetID uuid.UUID) (models.Planet, error)
+	AddResources(ctx context.Context, planetID uuid.UUID, resources models.Resources) error
 	GetResources(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
 	GetResourcesForUpdate(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
 	SetResources(ctx context.Context, planetID uuid.UUID, updatedResources models.Resources) error
@@ -57,6 +58,7 @@ type registryProvider interface {
 	GetResearchStatsByID(researchID consts.ResearchID) (registry.ResearchStats, error)
 	GetResearchZeroLvlIDByType(researchType consts.ResearchType) (consts.ResearchID, error)
 	GetFleetUnitStatsByID(fleetUnitID consts.FleetUnitID) (registry.FleetUnitStats, error)
+	GetNPCStatsByPosition(positionZ consts.PlanetPositionZ) (registry.NPCStats, error)
 }
 
 //go:generate mockery --name=randGenerator --filename=rand_generator.go --exported --with-expecter

@@ -3,7 +3,6 @@ package mission
 import (
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -15,24 +14,11 @@ import (
 )
 
 func TestService_calcAttackResult(t *testing.T) {
-	ctx := t.Context()
-
-	attackerID := uuid.New()
-	defenderID := uuid.New()
-
 	// Ship stats as specified
 	ship1ID := consts.FleetUnitID(1)
 	ship2ID := consts.FleetUnitID(2)
 	ship3ID := consts.FleetUnitID(3)
 	ship4ID := consts.FleetUnitID(4)
-
-	weaponResID := consts.ResearchID(10)
-	armorResID := consts.ResearchID(20)
-
-	researchMap := map[consts.ResearchType]consts.ResearchID{
-		consts.ResearchTypeWeaponTech: weaponResID,
-		consts.ResearchTypeArmorTech:  armorResID,
-	}
 
 	tests := []struct {
 		name        string
@@ -43,27 +29,20 @@ func TestService_calcAttackResult(t *testing.T) {
 		{
 			name: "attacker wins with stronger fleet",
 			input: attackSetup{
-				attackerID:    attackerID,
-				defenderID:    defenderID,
 				attackerFleet: []models.FleetUnit{{ID: ship1ID, Count: 100}},
 				defenderFleet: []models.FleetUnit{{ID: ship1ID, Count: 10}},
+				attackerResearches: userResearchBonuses{
+					attackBonus:  0.5,
+					defenseBonus: 0.5,
+				},
+				defenderResearches: userResearchBonuses{
+					attackBonus:  0.5,
+					defenseBonus: 0.5,
+				},
 			},
 			expectSetup: func(reg *mocks.RegistryProvider, storage *mocks.TxStorages) {
 				shipStats := registry.FleetUnitStats{ID: ship1ID, Attack: 1, Defense: 1}
 				reg.EXPECT().GetFleetUnitStatsByID(ship1ID).Return(shipStats, nil).Maybe()
-				reg.EXPECT().GetResearchStatsByID(weaponResID).Return(
-					registry.ResearchStats{Bonuses: registry.ResearchBonuses{AttackPower: 0.5}}, nil,
-				).Maybe()
-				reg.EXPECT().GetResearchStatsByID(armorResID).Return(
-					registry.ResearchStats{Bonuses: registry.ResearchBonuses{ArmorPower: 0.5}}, nil,
-				).Maybe()
-
-				storage.EXPECT().
-					GetUserResearchesByTypes(ctx, attackerID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech}).
-					Return(researchMap, nil).Once()
-				storage.EXPECT().
-					GetUserResearchesByTypes(ctx, defenderID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech}).
-					Return(researchMap, nil).Once()
 			},
 			want: attackResult{
 				attackerWins:      true,
@@ -74,8 +53,14 @@ func TestService_calcAttackResult(t *testing.T) {
 		{
 			name: "attacker wins with stronger mixed fleet",
 			input: attackSetup{
-				attackerID: attackerID,
-				defenderID: defenderID,
+				attackerResearches: userResearchBonuses{
+					attackBonus:  1,
+					defenseBonus: 1,
+				},
+				defenderResearches: userResearchBonuses{
+					attackBonus:  1,
+					defenseBonus: 1,
+				},
 				attackerFleet: []models.FleetUnit{
 					{ID: ship1ID, Count: 100},
 					{ID: ship2ID, Count: 50},
@@ -102,19 +87,6 @@ func TestService_calcAttackResult(t *testing.T) {
 				reg.EXPECT().GetFleetUnitStatsByID(ship4ID).Return(
 					registry.FleetUnitStats{ID: ship4ID, Attack: 100, Defense: 80}, nil,
 				).Maybe()
-				reg.EXPECT().GetResearchStatsByID(weaponResID).Return(
-					registry.ResearchStats{Bonuses: registry.ResearchBonuses{AttackPower: 1.0}}, nil,
-				).Maybe()
-				reg.EXPECT().GetResearchStatsByID(armorResID).Return(
-					registry.ResearchStats{Bonuses: registry.ResearchBonuses{ArmorPower: 1.0}}, nil,
-				).Maybe()
-
-				storage.EXPECT().
-					GetUserResearchesByTypes(ctx, attackerID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech}).
-					Return(researchMap, nil).Once()
-				storage.EXPECT().
-					GetUserResearchesByTypes(ctx, defenderID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech}).
-					Return(researchMap, nil).Once()
 			},
 			want: attackResult{
 				attackerWins: true,
@@ -133,10 +105,8 @@ func TestService_calcAttackResult(t *testing.T) {
 			},
 		},
 		{
-			name: "defender wins with the same fleet",
+			name: "attacker wins with the higher attack tech",
 			input: attackSetup{
-				attackerID: attackerID,
-				defenderID: defenderID,
 				attackerFleet: []models.FleetUnit{
 					{ID: ship1ID, Count: 100},
 					{ID: ship2ID, Count: 50},
@@ -148,6 +118,14 @@ func TestService_calcAttackResult(t *testing.T) {
 					{ID: ship2ID, Count: 50},
 					{ID: ship3ID, Count: 30},
 					{ID: ship4ID, Count: 20},
+				},
+				attackerResearches: userResearchBonuses{
+					attackBonus:  16,
+					defenseBonus: 1,
+				},
+				defenderResearches: userResearchBonuses{
+					attackBonus:  1,
+					defenseBonus: 1,
 				},
 			},
 			expectSetup: func(reg *mocks.RegistryProvider, storage *mocks.TxStorages) {
@@ -163,19 +141,60 @@ func TestService_calcAttackResult(t *testing.T) {
 				reg.EXPECT().GetFleetUnitStatsByID(ship4ID).Return(
 					registry.FleetUnitStats{ID: ship4ID, Attack: 100, Defense: 80}, nil,
 				).Maybe()
-				reg.EXPECT().GetResearchStatsByID(weaponResID).Return(
-					registry.ResearchStats{Bonuses: registry.ResearchBonuses{AttackPower: 1.0}}, nil,
+			},
+			want: attackResult{
+				attackerWins: true,
+				attackerFleetLeft: []models.FleetUnit{
+					{ID: ship1ID, Count: 86},
+					{ID: ship2ID, Count: 34},
+					{ID: ship3ID, Count: 13},
+					{ID: ship4ID, Count: 6},
+				},
+				defenderFleetLeft: []models.FleetUnit{
+					{ID: ship1ID, Count: 30},
+					{ID: ship2ID, Count: 15},
+					{ID: ship3ID, Count: 9},
+					{ID: ship4ID, Count: 6},
+				},
+			},
+		},
+		{
+			name: "defender wins with the same fleet",
+			input: attackSetup{
+				attackerFleet: []models.FleetUnit{
+					{ID: ship1ID, Count: 100},
+					{ID: ship2ID, Count: 50},
+					{ID: ship3ID, Count: 30},
+					{ID: ship4ID, Count: 20},
+				},
+				defenderFleet: []models.FleetUnit{
+					{ID: ship1ID, Count: 100},
+					{ID: ship2ID, Count: 50},
+					{ID: ship3ID, Count: 30},
+					{ID: ship4ID, Count: 20},
+				},
+				attackerResearches: userResearchBonuses{
+					attackBonus:  1,
+					defenseBonus: 1,
+				},
+				defenderResearches: userResearchBonuses{
+					attackBonus:  1,
+					defenseBonus: 1,
+				},
+			},
+			expectSetup: func(reg *mocks.RegistryProvider, storage *mocks.TxStorages) {
+				reg.EXPECT().GetFleetUnitStatsByID(ship1ID).Return(
+					registry.FleetUnitStats{ID: ship1ID, Attack: 1, Defense: 1}, nil,
 				).Maybe()
-				reg.EXPECT().GetResearchStatsByID(armorResID).Return(
-					registry.ResearchStats{Bonuses: registry.ResearchBonuses{ArmorPower: 1.0}}, nil,
+				reg.EXPECT().GetFleetUnitStatsByID(ship2ID).Return(
+					registry.FleetUnitStats{ID: ship2ID, Attack: 6, Defense: 5}, nil,
 				).Maybe()
-
-				storage.EXPECT().
-					GetUserResearchesByTypes(ctx, attackerID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech}).
-					Return(researchMap, nil).Once()
-				storage.EXPECT().
-					GetUserResearchesByTypes(ctx, defenderID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech}).
-					Return(researchMap, nil).Once()
+				reg.EXPECT().GetFleetUnitStatsByID(ship3ID).Return(
+					registry.FleetUnitStats{ID: ship3ID, Attack: 15, Defense: 12}, nil,
+				).Maybe()
+				reg.EXPECT().GetFleetUnitStatsByID(ship4ID).Return(
+					registry.FleetUnitStats{ID: ship4ID, Attack: 100, Defense: 80}, nil,
+				).Maybe()
 			},
 			want: attackResult{
 				attackerWins: false,
@@ -206,7 +225,7 @@ func TestService_calcAttackResult(t *testing.T) {
 				logger:   zap.NewNop(),
 			}
 
-			got, err := svc.calcAttackResult(ctx, tt.input, storage)
+			got, err := svc.calcAttackResult(tt.input)
 
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)

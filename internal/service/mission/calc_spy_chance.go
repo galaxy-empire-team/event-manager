@@ -30,10 +30,10 @@ func (s *Service) calcSpyChance(ctx context.Context, userID uuid.UUID, spyShipsC
 	}
 
 	res := spyChancesResult{
-		spyResources:  s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceImprove*defaultSpyResourcesChance)),
-		spyBuildings:  s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceImprove*defaultSpyBuildingsChance)),
-		spyFleet:      s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceImprove*defaultSpyFleetChance)),
-		spyResearches: s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceImprove*defaultSpyResearchesChance)),
+		spyResources:  s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyResourcesChance)),
+		spyBuildings:  s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyBuildingsChance)),
+		spyFleet:      s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyFleetChance)),
+		spyResearches: s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyResearchesChance)),
 	}
 
 	return res, nil

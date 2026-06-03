@@ -25,6 +25,11 @@ func (s *Service) returnMission(ctx context.Context, missionEvent models.Mission
 		return fmt.Errorf("storage.AddFleet(): %w", err)
 	}
 
+	err = storage.AddResources(ctx, planetInfo.ID, missionEvent.Cargo)
+	if err != nil {
+		return fmt.Errorf("storage.AddResources(): %w", err)
+	}
+
 	// --- create return notification ---
 	mType, err := s.registry.GetMissionTypeByID(missionEvent.MissionID)
 	if err != nil {

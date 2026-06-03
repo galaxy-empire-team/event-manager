@@ -38,7 +38,7 @@ func TestService_calcSpyChance(t *testing.T) {
 
 				reg.EXPECT().GetResearchStatsByID(spyResID).Return(
 					registry.ResearchStats{
-						Bonuses: registry.ResearchBonuses{SpyChanceImprove: 4.0},
+						Bonuses: registry.ResearchBonuses{SpyChanceMuliplier: 4.0},
 					}, nil,
 				).Once()
 
@@ -67,7 +67,7 @@ func TestService_calcSpyChance(t *testing.T) {
 
 				reg.EXPECT().GetResearchStatsByID(spyResID).Return(
 					registry.ResearchStats{
-						Bonuses: registry.ResearchBonuses{SpyChanceImprove: 4.0},
+						Bonuses: registry.ResearchBonuses{SpyChanceMuliplier: 4.0},
 					}, nil,
 				).Once()
 

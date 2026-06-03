@@ -191,6 +191,62 @@ func (_c *RegistryProvider_GetMissionTypeByID_Call) RunAndReturn(run func(consts
 	return _c
 }
 
+// GetNPCStatsByPosition provides a mock function with given fields: positionZ
+func (_m *RegistryProvider) GetNPCStatsByPosition(positionZ consts.PlanetPositionZ) (registry.NPCStats, error) {
+	ret := _m.Called(positionZ)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetNPCStatsByPosition")
+	}
+
+	var r0 registry.NPCStats
+	var r1 error
+	if rf, ok := ret.Get(0).(func(consts.PlanetPositionZ) (registry.NPCStats, error)); ok {
+		return rf(positionZ)
+	}
+	if rf, ok := ret.Get(0).(func(consts.PlanetPositionZ) registry.NPCStats); ok {
+		r0 = rf(positionZ)
+	} else {
+		r0 = ret.Get(0).(registry.NPCStats)
+	}
+
+	if rf, ok := ret.Get(1).(func(consts.PlanetPositionZ) error); ok {
+		r1 = rf(positionZ)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// RegistryProvider_GetNPCStatsByPosition_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetNPCStatsByPosition'
+type RegistryProvider_GetNPCStatsByPosition_Call struct {
+	*mock.Call
+}
+
+// GetNPCStatsByPosition is a helper method to define mock.On call
+//   - positionZ consts.PlanetPositionZ
+func (_e *RegistryProvider_Expecter) GetNPCStatsByPosition(positionZ interface{}) *RegistryProvider_GetNPCStatsByPosition_Call {
+	return &RegistryProvider_GetNPCStatsByPosition_Call{Call: _e.mock.On("GetNPCStatsByPosition", positionZ)}
+}
+
+func (_c *RegistryProvider_GetNPCStatsByPosition_Call) Run(run func(positionZ consts.PlanetPositionZ)) *RegistryProvider_GetNPCStatsByPosition_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(consts.PlanetPositionZ))
+	})
+	return _c
+}
+
+func (_c *RegistryProvider_GetNPCStatsByPosition_Call) Return(_a0 registry.NPCStats, _a1 error) *RegistryProvider_GetNPCStatsByPosition_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *RegistryProvider_GetNPCStatsByPosition_Call) RunAndReturn(run func(consts.PlanetPositionZ) (registry.NPCStats, error)) *RegistryProvider_GetNPCStatsByPosition_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetNotificationIDByType provides a mock function with given fields: notificationType
 func (_m *RegistryProvider) GetNotificationIDByType(notificationType consts.NotificationType) (consts.NotificationID, error) {
 	ret := _m.Called(notificationType)

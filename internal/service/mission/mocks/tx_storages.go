@@ -75,6 +75,54 @@ func (_c *TxStorages_AddFleet_Call) RunAndReturn(run func(context.Context, uuid.
 	return _c
 }
 
+// AddResources provides a mock function with given fields: ctx, planetID, resources
+func (_m *TxStorages) AddResources(ctx context.Context, planetID uuid.UUID, resources models.Resources) error {
+	ret := _m.Called(ctx, planetID, resources)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddResources")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, models.Resources) error); ok {
+		r0 = rf(ctx, planetID, resources)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// TxStorages_AddResources_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddResources'
+type TxStorages_AddResources_Call struct {
+	*mock.Call
+}
+
+// AddResources is a helper method to define mock.On call
+//   - ctx context.Context
+//   - planetID uuid.UUID
+//   - resources models.Resources
+func (_e *TxStorages_Expecter) AddResources(ctx interface{}, planetID interface{}, resources interface{}) *TxStorages_AddResources_Call {
+	return &TxStorages_AddResources_Call{Call: _e.mock.On("AddResources", ctx, planetID, resources)}
+}
+
+func (_c *TxStorages_AddResources_Call) Run(run func(ctx context.Context, planetID uuid.UUID, resources models.Resources)) *TxStorages_AddResources_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID), args[2].(models.Resources))
+	})
+	return _c
+}
+
+func (_c *TxStorages_AddResources_Call) Return(_a0 error) *TxStorages_AddResources_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *TxStorages_AddResources_Call) RunAndReturn(run func(context.Context, uuid.UUID, models.Resources) error) *TxStorages_AddResources_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // CreateMissionEvent provides a mock function with given fields: ctx, missionEvent
 func (_m *TxStorages) CreateMissionEvent(ctx context.Context, missionEvent models.MissionEvent) error {
 	ret := _m.Called(ctx, missionEvent)

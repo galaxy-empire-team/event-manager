@@ -1,10 +1,7 @@
 package mission
 
 import (
-	"context"
 	"fmt"
-
-	"github.com/google/uuid"
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
@@ -18,10 +15,10 @@ const (
 )
 
 type attackSetup struct {
-	attackerID    uuid.UUID
-	defenderID    uuid.UUID
-	attackerFleet []models.FleetUnit
-	defenderFleet []models.FleetUnit
+	attackerFleet      []models.FleetUnit
+	attackerResearches userResearchBonuses
+	defenderFleet      []models.FleetUnit
+	defenderResearches userResearchBonuses
 }
 
 type attackResult struct {
@@ -40,23 +37,13 @@ type totalPower struct {
 	defensePower uint64
 }
 
-func (s *Service) calcAttackResult(ctx context.Context, input attackSetup, storage TxStorages) (attackResult, error) {
-	attackerResearchBonuses, err := s.getResearchBonuses(ctx, input.attackerID, storage)
-	if err != nil {
-		return attackResult{}, fmt.Errorf("getResearchBonuses(attacker): %w", err)
-	}
-
-	attackerPower, err := s.calcFleetPower(input.attackerFleet, attackerResearchBonuses)
+func (s *Service) calcAttackResult(input attackSetup) (attackResult, error) {
+	attackerPower, err := s.calcFleetPower(input.attackerFleet, input.attackerResearches)
 	if err != nil {
 		return attackResult{}, fmt.Errorf("calcFleetPower(attacker): %w", err)
 	}
 
-	defenderResearchBonuses, err := s.getResearchBonuses(ctx, input.defenderID, storage)
-	if err != nil {
-		return attackResult{}, fmt.Errorf("getResearchBonuses(defender): %w", err)
-	}
-
-	defenderPower, err := s.calcFleetPower(input.defenderFleet, defenderResearchBonuses)
+	defenderPower, err := s.calcFleetPower(input.defenderFleet, input.defenderResearches)
 	if err != nil {
 		return attackResult{}, fmt.Errorf("calcFleetPower(defender): %w", err)
 	}
@@ -68,12 +55,12 @@ func (s *Service) calcAttackResult(ctx context.Context, input attackSetup, stora
 	damageToDefender := attackerPower.attackPower * attackerPower.attackPower / (attackerPower.attackPower + defenderPower.defensePower)
 
 	// Apply damage to fleets
-	updatedAttackerFleet, err := s.calcFleetLoss(input.attackerFleet, damageToAttacker, attackerResearchBonuses)
+	updatedAttackerFleet, err := s.calcFleetLoss(input.attackerFleet, damageToAttacker, input.attackerResearches)
 	if err != nil {
 		return attackResult{}, fmt.Errorf("calcFleetLoss(attacker): %w", err)
 	}
 
-	updatedDefenderFleet, err := s.calcFleetLoss(input.defenderFleet, damageToDefender, defenderResearchBonuses)
+	updatedDefenderFleet, err := s.calcFleetLoss(input.defenderFleet, damageToDefender, input.defenderResearches)
 	if err != nil {
 		return attackResult{}, fmt.Errorf("calcFleetLoss(defender): %w", err)
 	}
@@ -153,43 +140,5 @@ func (s *Service) calcFleetPower(fleet []models.FleetUnit, researches userResear
 	return totalPower{
 		attackPower:  fleetAttackPower,
 		defensePower: fleetDefensePower,
-	}, nil
-}
-
-func (s *Service) getResearchBonuses(ctx context.Context, userID uuid.UUID, storage TxStorages) (userResearchBonuses, error) {
-	researchIDs, err := storage.GetUserResearchesByTypes(ctx, userID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech})
-	if err != nil {
-		return userResearchBonuses{}, fmt.Errorf("storage.GetUserResearchesByTypes(): %w", err)
-	}
-
-	weaponTechID, ok := researchIDs[consts.ResearchTypeWeaponTech]
-	if !ok {
-		weaponTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeWeaponTech)
-		if err != nil {
-			return userResearchBonuses{}, fmt.Errorf("registry.GetResearchZeroLvlIDByType(weapon tech): %w", err)
-		}
-	}
-
-	weaponTechStats, err := s.registry.GetResearchStatsByID(weaponTechID)
-	if err != nil {
-		return userResearchBonuses{}, fmt.Errorf("registry.GetResearchStatsByID(): %w", err)
-	}
-
-	armorTechID, ok := researchIDs[consts.ResearchTypeArmorTech]
-	if !ok {
-		armorTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeArmorTech)
-		if err != nil {
-			return userResearchBonuses{}, fmt.Errorf("registry.GetResearchZeroLvlIDByType(armor tech): %w", err)
-		}
-	}
-
-	armorTechStats, err := s.registry.GetResearchStatsByID(armorTechID)
-	if err != nil {
-		return userResearchBonuses{}, fmt.Errorf("registry.GetResearchStatsByID(): %w", err)
-	}
-
-	return userResearchBonuses{
-		attackBonus:  float64(weaponTechStats.Bonuses.AttackPower),
-		defenseBonus: float64(armorTechStats.Bonuses.ArmorPower),
 	}, nil
 }
