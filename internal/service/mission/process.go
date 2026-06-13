@@ -55,6 +55,11 @@ func (s *Service) Process(ctx context.Context, missionEventsCount uint16) error 
 				if err != nil {
 					return fmt.Errorf("s.handleSpy(): %w", err)
 				}
+			case consts.MissionTypeRecycle:
+				err := s.handleRecycle(ctx, missionEvent, txStorages)
+				if err != nil {
+					return fmt.Errorf("s.handleRecycle(): %w", err)
+				}
 			default:
 				s.logger.Warn("Unknown mission type", zap.Any("missionEvent", missionEvent))
 			}

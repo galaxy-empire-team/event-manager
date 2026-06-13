@@ -39,11 +39,11 @@ func (s *Service) getDefenderPlanet(ctx context.Context, missionEvent models.Mis
 				return attackDefender{}, fmt.Errorf("s.registry.GetResearchStatsByID(): %w", err)
 			}
 
-			if research.Type == consts.ResearchTypeWeaponTech {
+			if research.Type == consts.ResearchTypeWeaponTechnology {
 				defender.researches.attackBonus = float64(research.Bonuses.AttackPower)
 			}
 
-			if research.Type == consts.ResearchTypeArmorTech {
+			if research.Type == consts.ResearchTypeArmorTechnology {
 				defender.researches.defenseBonus = float64(research.Bonuses.ArmorPower)
 			}
 		}

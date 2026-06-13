@@ -5,6 +5,6 @@ import (
 )
 
 type ReturnV1 struct {
-	MissionType consts.MissionType `json:"mission_type"`
-	Status      string             `json:"status"`
+	MissionType consts.MissionID `json:"mission_id"`
+	Status      string           `json:"status"`
 }

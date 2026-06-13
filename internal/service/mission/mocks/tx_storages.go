@@ -27,6 +27,54 @@ func (_m *TxStorages) EXPECT() *TxStorages_Expecter {
 	return &TxStorages_Expecter{mock: &_m.Mock}
 }
 
+// AddDebris provides a mock function with given fields: ctx, planetID, debris
+func (_m *TxStorages) AddDebris(ctx context.Context, planetID uuid.UUID, debris models.Resources) error {
+	ret := _m.Called(ctx, planetID, debris)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AddDebris")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, models.Resources) error); ok {
+		r0 = rf(ctx, planetID, debris)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// TxStorages_AddDebris_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'AddDebris'
+type TxStorages_AddDebris_Call struct {
+	*mock.Call
+}
+
+// AddDebris is a helper method to define mock.On call
+//   - ctx context.Context
+//   - planetID uuid.UUID
+//   - debris models.Resources
+func (_e *TxStorages_Expecter) AddDebris(ctx interface{}, planetID interface{}, debris interface{}) *TxStorages_AddDebris_Call {
+	return &TxStorages_AddDebris_Call{Call: _e.mock.On("AddDebris", ctx, planetID, debris)}
+}
+
+func (_c *TxStorages_AddDebris_Call) Run(run func(ctx context.Context, planetID uuid.UUID, debris models.Resources)) *TxStorages_AddDebris_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID), args[2].(models.Resources))
+	})
+	return _c
+}
+
+func (_c *TxStorages_AddDebris_Call) Return(_a0 error) *TxStorages_AddDebris_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *TxStorages_AddDebris_Call) RunAndReturn(run func(context.Context, uuid.UUID, models.Resources) error) *TxStorages_AddDebris_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // AddFleet provides a mock function with given fields: ctx, planetID, fleet
 func (_m *TxStorages) AddFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error {
 	ret := _m.Called(ctx, planetID, fleet)
@@ -170,6 +218,53 @@ func (_c *TxStorages_CreateMissionEvent_Call) RunAndReturn(run func(context.Cont
 	return _c
 }
 
+// CreateMoon provides a mock function with given fields: ctx, planetID
+func (_m *TxStorages) CreateMoon(ctx context.Context, planetID uuid.UUID) error {
+	ret := _m.Called(ctx, planetID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateMoon")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) error); ok {
+		r0 = rf(ctx, planetID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// TxStorages_CreateMoon_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateMoon'
+type TxStorages_CreateMoon_Call struct {
+	*mock.Call
+}
+
+// CreateMoon is a helper method to define mock.On call
+//   - ctx context.Context
+//   - planetID uuid.UUID
+func (_e *TxStorages_Expecter) CreateMoon(ctx interface{}, planetID interface{}) *TxStorages_CreateMoon_Call {
+	return &TxStorages_CreateMoon_Call{Call: _e.mock.On("CreateMoon", ctx, planetID)}
+}
+
+func (_c *TxStorages_CreateMoon_Call) Run(run func(ctx context.Context, planetID uuid.UUID)) *TxStorages_CreateMoon_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *TxStorages_CreateMoon_Call) Return(_a0 error) *TxStorages_CreateMoon_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *TxStorages_CreateMoon_Call) RunAndReturn(run func(context.Context, uuid.UUID) error) *TxStorages_CreateMoon_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // DeleteMissionEvents provides a mock function with given fields: ctx, eventsToDelete
 func (_m *TxStorages) DeleteMissionEvents(ctx context.Context, eventsToDelete []models.MissionEvent) error {
 	ret := _m.Called(ctx, eventsToDelete)
@@ -276,6 +371,63 @@ func (_c *TxStorages_GetBuildings_Call) RunAndReturn(run func(context.Context, u
 	return _c
 }
 
+// GetDebrisForUpdate provides a mock function with given fields: ctx, planetID
+func (_m *TxStorages) GetDebrisForUpdate(ctx context.Context, planetID uuid.UUID) (models.Resources, error) {
+	ret := _m.Called(ctx, planetID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetDebrisForUpdate")
+	}
+
+	var r0 models.Resources
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (models.Resources, error)); ok {
+		return rf(ctx, planetID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) models.Resources); ok {
+		r0 = rf(ctx, planetID)
+	} else {
+		r0 = ret.Get(0).(models.Resources)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, planetID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// TxStorages_GetDebrisForUpdate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetDebrisForUpdate'
+type TxStorages_GetDebrisForUpdate_Call struct {
+	*mock.Call
+}
+
+// GetDebrisForUpdate is a helper method to define mock.On call
+//   - ctx context.Context
+//   - planetID uuid.UUID
+func (_e *TxStorages_Expecter) GetDebrisForUpdate(ctx interface{}, planetID interface{}) *TxStorages_GetDebrisForUpdate_Call {
+	return &TxStorages_GetDebrisForUpdate_Call{Call: _e.mock.On("GetDebrisForUpdate", ctx, planetID)}
+}
+
+func (_c *TxStorages_GetDebrisForUpdate_Call) Run(run func(ctx context.Context, planetID uuid.UUID)) *TxStorages_GetDebrisForUpdate_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *TxStorages_GetDebrisForUpdate_Call) Return(_a0 models.Resources, _a1 error) *TxStorages_GetDebrisForUpdate_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *TxStorages_GetDebrisForUpdate_Call) RunAndReturn(run func(context.Context, uuid.UUID) (models.Resources, error)) *TxStorages_GetDebrisForUpdate_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetMissionEvents provides a mock function with given fields: ctx, missionEventsCount
 func (_m *TxStorages) GetMissionEvents(ctx context.Context, missionEventsCount uint16) ([]models.MissionEvent, error) {
 	ret := _m.Called(ctx, missionEventsCount)
@@ -335,6 +487,63 @@ func (_c *TxStorages_GetMissionEvents_Call) RunAndReturn(run func(context.Contex
 	return _c
 }
 
+// GetPlanetCoordinatesByID provides a mock function with given fields: ctx, planetID
+func (_m *TxStorages) GetPlanetCoordinatesByID(ctx context.Context, planetID uuid.UUID) (models.Coordinates, error) {
+	ret := _m.Called(ctx, planetID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPlanetCoordinatesByID")
+	}
+
+	var r0 models.Coordinates
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (models.Coordinates, error)); ok {
+		return rf(ctx, planetID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) models.Coordinates); ok {
+		r0 = rf(ctx, planetID)
+	} else {
+		r0 = ret.Get(0).(models.Coordinates)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, planetID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// TxStorages_GetPlanetCoordinatesByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetPlanetCoordinatesByID'
+type TxStorages_GetPlanetCoordinatesByID_Call struct {
+	*mock.Call
+}
+
+// GetPlanetCoordinatesByID is a helper method to define mock.On call
+//   - ctx context.Context
+//   - planetID uuid.UUID
+func (_e *TxStorages_Expecter) GetPlanetCoordinatesByID(ctx interface{}, planetID interface{}) *TxStorages_GetPlanetCoordinatesByID_Call {
+	return &TxStorages_GetPlanetCoordinatesByID_Call{Call: _e.mock.On("GetPlanetCoordinatesByID", ctx, planetID)}
+}
+
+func (_c *TxStorages_GetPlanetCoordinatesByID_Call) Run(run func(ctx context.Context, planetID uuid.UUID)) *TxStorages_GetPlanetCoordinatesByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID))
+	})
+	return _c
+}
+
+func (_c *TxStorages_GetPlanetCoordinatesByID_Call) Return(_a0 models.Coordinates, _a1 error) *TxStorages_GetPlanetCoordinatesByID_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *TxStorages_GetPlanetCoordinatesByID_Call) RunAndReturn(run func(context.Context, uuid.UUID) (models.Coordinates, error)) *TxStorages_GetPlanetCoordinatesByID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetPlanetFleetForUpdate provides a mock function with given fields: ctx, planetID
 func (_m *TxStorages) GetPlanetFleetForUpdate(ctx context.Context, planetID uuid.UUID) ([]models.FleetUnit, error) {
 	ret := _m.Called(ctx, planetID)
@@ -390,6 +599,65 @@ func (_c *TxStorages_GetPlanetFleetForUpdate_Call) Return(_a0 []models.FleetUnit
 }
 
 func (_c *TxStorages_GetPlanetFleetForUpdate_Call) RunAndReturn(run func(context.Context, uuid.UUID) ([]models.FleetUnit, error)) *TxStorages_GetPlanetFleetForUpdate_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetPlanetIDByCoordinates provides a mock function with given fields: ctx, coordinates
+func (_m *TxStorages) GetPlanetIDByCoordinates(ctx context.Context, coordinates models.Coordinates) (uuid.UUID, error) {
+	ret := _m.Called(ctx, coordinates)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPlanetIDByCoordinates")
+	}
+
+	var r0 uuid.UUID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, models.Coordinates) (uuid.UUID, error)); ok {
+		return rf(ctx, coordinates)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, models.Coordinates) uuid.UUID); ok {
+		r0 = rf(ctx, coordinates)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(uuid.UUID)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, models.Coordinates) error); ok {
+		r1 = rf(ctx, coordinates)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// TxStorages_GetPlanetIDByCoordinates_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetPlanetIDByCoordinates'
+type TxStorages_GetPlanetIDByCoordinates_Call struct {
+	*mock.Call
+}
+
+// GetPlanetIDByCoordinates is a helper method to define mock.On call
+//   - ctx context.Context
+//   - coordinates models.Coordinates
+func (_e *TxStorages_Expecter) GetPlanetIDByCoordinates(ctx interface{}, coordinates interface{}) *TxStorages_GetPlanetIDByCoordinates_Call {
+	return &TxStorages_GetPlanetIDByCoordinates_Call{Call: _e.mock.On("GetPlanetIDByCoordinates", ctx, coordinates)}
+}
+
+func (_c *TxStorages_GetPlanetIDByCoordinates_Call) Run(run func(ctx context.Context, coordinates models.Coordinates)) *TxStorages_GetPlanetIDByCoordinates_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(models.Coordinates))
+	})
+	return _c
+}
+
+func (_c *TxStorages_GetPlanetIDByCoordinates_Call) Return(_a0 uuid.UUID, _a1 error) *TxStorages_GetPlanetIDByCoordinates_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *TxStorages_GetPlanetIDByCoordinates_Call) RunAndReturn(run func(context.Context, models.Coordinates) (uuid.UUID, error)) *TxStorages_GetPlanetIDByCoordinates_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -843,6 +1111,54 @@ func (_c *TxStorages_SaveNotificationEvents_Call) Return(_a0 error) *TxStorages_
 }
 
 func (_c *TxStorages_SaveNotificationEvents_Call) RunAndReturn(run func(context.Context, []models.NotificationEvent) error) *TxStorages_SaveNotificationEvents_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SetDebris provides a mock function with given fields: ctx, planetID, debris
+func (_m *TxStorages) SetDebris(ctx context.Context, planetID uuid.UUID, debris models.Resources) error {
+	ret := _m.Called(ctx, planetID, debris)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SetDebris")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID, models.Resources) error); ok {
+		r0 = rf(ctx, planetID, debris)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// TxStorages_SetDebris_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SetDebris'
+type TxStorages_SetDebris_Call struct {
+	*mock.Call
+}
+
+// SetDebris is a helper method to define mock.On call
+//   - ctx context.Context
+//   - planetID uuid.UUID
+//   - debris models.Resources
+func (_e *TxStorages_Expecter) SetDebris(ctx interface{}, planetID interface{}, debris interface{}) *TxStorages_SetDebris_Call {
+	return &TxStorages_SetDebris_Call{Call: _e.mock.On("SetDebris", ctx, planetID, debris)}
+}
+
+func (_c *TxStorages_SetDebris_Call) Run(run func(ctx context.Context, planetID uuid.UUID, debris models.Resources)) *TxStorages_SetDebris_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(uuid.UUID), args[2].(models.Resources))
+	})
+	return _c
+}
+
+func (_c *TxStorages_SetDebris_Call) Return(_a0 error) *TxStorages_SetDebris_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *TxStorages_SetDebris_Call) RunAndReturn(run func(context.Context, uuid.UUID, models.Resources) error) *TxStorages_SetDebris_Call {
 	_c.Call.Return(run)
 	return _c
 }

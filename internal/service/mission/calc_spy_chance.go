@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	maxChance                  = 100
 	defaultSpyResourcesChance  = 1.5
 	defaultSpyBuildingsChance  = 1.0
 	defaultSpyFleetChance      = 0.5
@@ -30,16 +31,16 @@ func (s *Service) calcSpyChance(ctx context.Context, userID uuid.UUID, spyShipsC
 	}
 
 	res := spyChancesResult{
-		spyResources:  s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyResourcesChance)),
-		spyBuildings:  s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyBuildingsChance)),
-		spyFleet:      s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyFleetChance)),
-		spyResearches: s.getSpyChance(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyResearchesChance)),
+		spyResources:  s.isSpy(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyResourcesChance)),
+		spyBuildings:  s.isSpy(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyBuildingsChance)),
+		spyFleet:      s.isSpy(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyFleetChance)),
+		spyResearches: s.isSpy(float32(spyShipsCount) * float32(spyResearchStats.Bonuses.SpyChanceMuliplier*defaultSpyResearchesChance)),
 	}
 
 	return res, nil
 }
 
-func (s *Service) getSpyChance(persent float32) bool {
+func (s *Service) isSpy(persent float32) bool {
 	const maxChance = 100
 
 	return s.randGenerator.Intn(maxChance) < int(persent)

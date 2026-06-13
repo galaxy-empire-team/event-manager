@@ -31,13 +31,8 @@ func (s *Service) returnMission(ctx context.Context, missionEvent models.Mission
 	}
 
 	// --- create return notification ---
-	mType, err := s.registry.GetMissionTypeByID(missionEvent.MissionID)
-	if err != nil {
-		return fmt.Errorf("s.registry.GetMissionTypeByID(): %w", err)
-	}
-
 	notificationMsg := notifications.ReturnV1{
-		MissionType: mType,
+		MissionType: missionEvent.MissionID,
 		Status:      StatusFinished,
 	}
 

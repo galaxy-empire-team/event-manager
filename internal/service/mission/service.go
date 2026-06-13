@@ -21,6 +21,9 @@ type TxStorages interface {
 	DeleteMissionEvents(ctx context.Context, eventsToDelete []models.MissionEvent) error
 
 	// planet storage
+	CreateMoon(ctx context.Context, planetID uuid.UUID) error
+	GetPlanetIDByCoordinates(ctx context.Context, coordinates models.Coordinates) (uuid.UUID, error)
+	GetPlanetCoordinatesByID(ctx context.Context, planetID uuid.UUID) (models.Coordinates, error)
 	GetPlanetInfoByCoordinates(ctx context.Context, planetFrom models.Coordinates) (models.Planet, error)
 	GetPlanetInfoByID(ctx context.Context, planetID uuid.UUID) (models.Planet, error)
 	AddResources(ctx context.Context, planetID uuid.UUID, resources models.Resources) error
@@ -30,6 +33,9 @@ type TxStorages interface {
 	GetPlanetFleetForUpdate(ctx context.Context, planetID uuid.UUID) ([]models.FleetUnit, error)
 	SetPlanetFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
 	AddFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
+	AddDebris(ctx context.Context, planetID uuid.UUID, debris models.Resources) error
+	GetDebrisForUpdate(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
+	SetDebris(ctx context.Context, planetID uuid.UUID, debris models.Resources) error
 	GetBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error)
 	GetPlanetMinesProduction(ctx context.Context, planetID uuid.UUID) (map[consts.BuildingType]uint64, error)
 
@@ -61,6 +67,10 @@ type registryProvider interface {
 	GetNPCStatsByPosition(positionZ consts.PlanetPositionZ) (registry.NPCStats, error)
 }
 
+type repository interface {
+	GetResearchByType(ctx context.Context, userID uuid.UUID, researchType consts.ResearchType) (registry.ResearchStats, error)
+}
+
 //go:generate mockery --name=randGenerator --filename=rand_generator.go --exported --with-expecter
 type randGenerator interface {
 	Intn(n int) int
@@ -70,15 +80,17 @@ type Service struct {
 	txManager       txManager
 	bridgeAPIClient bridgeAPIClient
 	registry        registryProvider
+	repository      repository
 	randGenerator   randGenerator
 	logger          *zap.Logger
 }
 
-func New(txManager txManager, bridgeAPIClient bridgeAPIClient, registryProvider registryProvider, logger *zap.Logger) *Service {
+func New(txManager txManager, bridgeAPIClient bridgeAPIClient, repository repository, registryProvider registryProvider, logger *zap.Logger) *Service {
 	return &Service{
 		txManager:       txManager,
 		bridgeAPIClient: bridgeAPIClient,
 		registry:        registryProvider,
+		repository:      repository,
 		randGenerator:   rand.New(rand.NewSource(time.Now().UnixNano())),
 		logger:          logger,
 	}

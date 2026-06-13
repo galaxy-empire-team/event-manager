@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/samber/lo"
+	"go.uber.org/zap"
 
 	"github.com/galaxy-empire-team/bridge-api/pkg/consts"
 	"github.com/galaxy-empire-team/event-manager/internal/models"
@@ -13,6 +14,11 @@ import (
 )
 
 func (s *Service) handleSpy(ctx context.Context, missionEvent models.MissionEvent, storage TxStorages) error {
+	if len(missionEvent.Fleet) != 1 {
+		s.logger.Warn("handleSpy: invalid fleet size", zap.Any("missionEvent", missionEvent))
+		return nil
+	}
+
 	targetPlanet, err := storage.GetPlanetInfoByCoordinates(ctx, missionEvent.PlanetTo)
 	if err != nil {
 		return fmt.Errorf("storage.GetPlanetInfoByCoordinates(): %w", err)
@@ -20,10 +26,6 @@ func (s *Service) handleSpy(ctx context.Context, missionEvent models.MissionEven
 
 	if err := s.bridgeAPIClient.UpdatePlanetResources(ctx, missionEvent.UserID, targetPlanet.ID, missionEvent.FinishedAt); err != nil {
 		return fmt.Errorf("bridgeAPIClient.UpdatePlanetResources(): %w", err)
-	}
-
-	if len(missionEvent.Fleet) != 1 {
-		return ErrInvalidFleetSize
 	}
 
 	spyChances, err := s.calcSpyChance(ctx, missionEvent.UserID, missionEvent.Fleet[0].Count, storage)
@@ -113,6 +115,12 @@ func (s *Service) handleSpy(ctx context.Context, missionEvent models.MissionEven
 			}
 		}),
 		Researches: researches,
+		Result: notifications.SpyResult{
+			ResourcesGot:  spyChances.spyResources,
+			BuildingsGot:  spyChances.spyBuildings,
+			FleetGot:      spyChances.spyFleet,
+			ResearchesGot: spyChances.spyResearches,
+		},
 	}
 
 	users := userIDPair{

@@ -9,10 +9,12 @@ import (
 	"github.com/galaxy-empire-team/event-manager/internal/clients/bridgeapi"
 	"github.com/galaxy-empire-team/event-manager/internal/config"
 	"github.com/galaxy-empire-team/event-manager/internal/db"
+	"github.com/galaxy-empire-team/event-manager/internal/repository"
 	buildingservice "github.com/galaxy-empire-team/event-manager/internal/service/building"
 	fleetconstructionservice "github.com/galaxy-empire-team/event-manager/internal/service/fleetconsturction"
 	missionservice "github.com/galaxy-empire-team/event-manager/internal/service/mission"
 	researchservice "github.com/galaxy-empire-team/event-manager/internal/service/research"
+	researchstorage "github.com/galaxy-empire-team/event-manager/internal/storage/research"
 	"github.com/galaxy-empire-team/event-manager/internal/storage/txmanager"
 	"github.com/galaxy-empire-team/event-manager/pkg/worker"
 )
@@ -50,15 +52,19 @@ func run() error {
 
 	// initialize manager that implemets storage methods inside transactions.
 	txManager := txmanager.New(db)
+	researchStorage := researchstorage.New(db)
 
 	reg, err := registry.New(ctx, db.Pool)
 	if err != nil {
 		return fmt.Errorf("registry.New(): %w", err)
 	}
 
+	// initialize repositories
+	repo := repository.New(researchStorage, reg)
+
 	// initialize services. Use other binaries for other services as needed.
 	buildingService := buildingservice.New(txManager, reg, app.ComponentLogger("buildingservice"))
-	missionService := missionservice.New(txManager, bridgeAPIClient, reg, app.ComponentLogger("missionservice"))
+	missionService := missionservice.New(txManager, bridgeAPIClient, repo, reg, app.ComponentLogger("missionservice"))
 	researchService := researchservice.New(txManager, reg, app.ComponentLogger("researchservice"))
 	fleetConstructionService := fleetconstructionservice.New(txManager, app.ComponentLogger("fleetConstructionService"))
 

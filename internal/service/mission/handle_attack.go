@@ -49,7 +49,22 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 				return fmt.Errorf("s.calcFleetCapacity(): %w", err)
 			}
 
+			lootingTechStats, err := s.repository.GetResearchByType(ctx, missionEvent.UserID, consts.ResearchTypeLootingTechnology)
+			if err != nil {
+				return fmt.Errorf("storage.GetUserResearchesByTypes(): %w", err)
+			}
+
+			defender.planet.Resources.Metal = uint64(float64(defender.planet.Resources.Metal) * float64(lootingTechStats.Bonuses.LootingNPCMuliplier))
+			defender.planet.Resources.Crystal = uint64(float64(defender.planet.Resources.Crystal) * float64(lootingTechStats.Bonuses.LootingNPCMuliplier))
+			defender.planet.Resources.Gas = uint64(float64(defender.planet.Resources.Gas) * float64(lootingTechStats.Bonuses.LootingNPCMuliplier))
 			gainedResources = s.fillFleetCargo(defender.planet.Resources, fleetCapactity).gained
+
+			updatedAttackerFleet, err := s.lootNPCFleet(attackResult.attackerFleetLeft, missionEvent.PlanetTo.Z, lootingTechStats.Bonuses.LootingNPCMuliplier)
+			if err != nil {
+				return fmt.Errorf("s.lootNPCFleet(): %w", err)
+			}
+
+			attackResult.attackerFleetLeft = updatedAttackerFleet
 		} else {
 			gainedResources, err = s.stealResources(ctx, defender.planet, missionEvent.Fleet, storage)
 			if err != nil {
@@ -75,9 +90,26 @@ func (s *Service) handleAttack(ctx context.Context, missionEvent models.MissionE
 	}
 
 	if !s.isPlanetNPC(missionEvent.PlanetTo.Z) {
-		err = storage.SetPlanetFleet(ctx, attackerPlanet.ID, attackResult.attackerFleetLeft)
+		err = storage.SetPlanetFleet(ctx, defender.planet.ID, attackResult.defenderFleetLeft)
 		if err != nil {
-			return fmt.Errorf("storage.SetPlanetFleet(%s): %w", attackerPlanet.ID.String(), err)
+			return fmt.Errorf("storage.SetPlanetFleet(%s): %w", defender.planet.ID.String(), err)
+		}
+
+		debris, err := s.calcDebris(missionEvent.Fleet, attackResult.attackerFleetLeft)
+		if err != nil {
+			return fmt.Errorf("s.calcDebris(): %w", err)
+		}
+
+		err = storage.AddDebris(ctx, attackerPlanet.ID, debris)
+		if err != nil {
+			return fmt.Errorf("storage.AddDebris(): %w", err)
+		}
+
+		if s.isMoonCreated(debris) {
+			err = storage.CreateMoon(ctx, defender.planet.ID)
+			if err != nil {
+				return fmt.Errorf("storage.CreateMoon(): %w", err)
+			}
 		}
 	}
 
@@ -168,6 +200,7 @@ func (s *Service) createAttackNotificationEvent(ctx context.Context, users userI
 		},
 	}
 
+	// If planet is not NPC
 	if users.Defender != uuid.Nil {
 		notificationEvents = append(notificationEvents, models.NotificationEvent{
 			UserID:         users.Defender,

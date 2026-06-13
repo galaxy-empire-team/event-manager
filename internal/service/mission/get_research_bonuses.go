@@ -11,14 +11,14 @@ import (
 
 // getResearchBonuses return weapon and armor tech bonuses for an attack calculation
 func (s *Service) getResearchBonuses(ctx context.Context, userID uuid.UUID, storage TxStorages) (userResearchBonuses, error) {
-	researchIDs, err := storage.GetUserResearchesByTypes(ctx, userID, []consts.ResearchType{consts.ResearchTypeWeaponTech, consts.ResearchTypeArmorTech})
+	researchIDs, err := storage.GetUserResearchesByTypes(ctx, userID, []consts.ResearchType{consts.ResearchTypeWeaponTechnology, consts.ResearchTypeArmorTechnology})
 	if err != nil {
 		return userResearchBonuses{}, fmt.Errorf("storage.GetUserResearchesByTypes(): %w", err)
 	}
 
-	weaponTechID, ok := researchIDs[consts.ResearchTypeWeaponTech]
+	weaponTechID, ok := researchIDs[consts.ResearchTypeWeaponTechnology]
 	if !ok {
-		weaponTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeWeaponTech)
+		weaponTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeWeaponTechnology)
 		if err != nil {
 			return userResearchBonuses{}, fmt.Errorf("registry.GetResearchZeroLvlIDByType(weapon tech): %w", err)
 		}
@@ -29,9 +29,9 @@ func (s *Service) getResearchBonuses(ctx context.Context, userID uuid.UUID, stor
 		return userResearchBonuses{}, fmt.Errorf("registry.GetResearchStatsByID(): %w", err)
 	}
 
-	armorTechID, ok := researchIDs[consts.ResearchTypeArmorTech]
+	armorTechID, ok := researchIDs[consts.ResearchTypeArmorTechnology]
 	if !ok {
-		armorTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeArmorTech)
+		armorTechID, err = s.registry.GetResearchZeroLvlIDByType(consts.ResearchTypeArmorTechnology)
 		if err != nil {
 			return userResearchBonuses{}, fmt.Errorf("registry.GetResearchZeroLvlIDByType(armor tech): %w", err)
 		}
