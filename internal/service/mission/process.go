@@ -31,9 +31,9 @@ func (s *Service) Process(ctx context.Context, missionEventsCount uint16) error 
 
 			// I don't want to create return mission type cause I need to store previous type somehow
 			if missionEvent.IsReturning {
-				err := s.returnMission(ctx, missionEvent, txStorages)
+				err := s.handleReturn(ctx, missionEvent, txStorages)
 				if err != nil {
-					return fmt.Errorf("s.returnMission(): %w", err)
+					return fmt.Errorf("s.handleReturn(): %w", err)
 				}
 
 				break
@@ -59,6 +59,11 @@ func (s *Service) Process(ctx context.Context, missionEventsCount uint16) error 
 				err := s.handleRecycle(ctx, missionEvent, txStorages)
 				if err != nil {
 					return fmt.Errorf("s.handleRecycle(): %w", err)
+				}
+			case consts.MissionTypeTransport:
+				err := s.handleTransport(ctx, missionEvent, txStorages)
+				if err != nil {
+					return fmt.Errorf("s.handleTransport(): %w", err)
 				}
 			default:
 				s.logger.Warn("Unknown mission type", zap.Any("missionEvent", missionEvent))
