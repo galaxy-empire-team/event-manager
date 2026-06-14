@@ -46,7 +46,7 @@ func TestService_calcAttackResult(t *testing.T) {
 			},
 			want: attackResult{
 				attackerWins:      true,
-				attackerFleetLeft: []models.FleetUnit{{ID: ship1ID, Count: 100}},
+				attackerFleetLeft: []models.FleetUnit{{ID: ship1ID, Count: 99}},
 				defenderFleetLeft: []models.FleetUnit{{ID: ship1ID, Count: 3}},
 			},
 		},
@@ -91,10 +91,10 @@ func TestService_calcAttackResult(t *testing.T) {
 			want: attackResult{
 				attackerWins: true,
 				attackerFleetLeft: []models.FleetUnit{
-					{ID: ship1ID, Count: 98},
-					{ID: ship2ID, Count: 47},
-					{ID: ship3ID, Count: 27},
-					{ID: ship4ID, Count: 17},
+					{ID: ship1ID, Count: 88},
+					{ID: ship2ID, Count: 44},
+					{ID: ship3ID, Count: 26},
+					{ID: ship4ID, Count: 18},
 				},
 				defenderFleetLeft: []models.FleetUnit{
 					{ID: ship1ID, Count: 9},
@@ -145,10 +145,10 @@ func TestService_calcAttackResult(t *testing.T) {
 			want: attackResult{
 				attackerWins: true,
 				attackerFleetLeft: []models.FleetUnit{
-					{ID: ship1ID, Count: 86},
-					{ID: ship2ID, Count: 34},
-					{ID: ship3ID, Count: 13},
-					{ID: ship4ID, Count: 6},
+					{ID: ship1ID, Count: 39},
+					{ID: ship2ID, Count: 17},
+					{ID: ship3ID, Count: 10},
+					{ID: ship4ID, Count: 7},
 				},
 				defenderFleetLeft: []models.FleetUnit{
 					{ID: ship1ID, Count: 30},
@@ -199,16 +199,16 @@ func TestService_calcAttackResult(t *testing.T) {
 			want: attackResult{
 				attackerWins: false,
 				attackerFleetLeft: []models.FleetUnit{
-					{ID: ship1ID, Count: 86},
-					{ID: ship2ID, Count: 34},
-					{ID: ship3ID, Count: 13},
-					{ID: ship4ID, Count: 6},
+					{ID: ship1ID, Count: 39},
+					{ID: ship2ID, Count: 17},
+					{ID: ship3ID, Count: 10},
+					{ID: ship4ID, Count: 7},
 				},
 				defenderFleetLeft: []models.FleetUnit{
-					{ID: ship1ID, Count: 86},
-					{ID: ship2ID, Count: 34},
-					{ID: ship3ID, Count: 13},
-					{ID: ship4ID, Count: 6},
+					{ID: ship1ID, Count: 39},
+					{ID: ship2ID, Count: 17},
+					{ID: ship3ID, Count: 10},
+					{ID: ship4ID, Count: 7},
 				},
 			},
 		},

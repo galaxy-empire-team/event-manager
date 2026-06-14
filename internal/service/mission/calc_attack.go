@@ -10,8 +10,12 @@ import (
 const (
 	// Minimum percentage of fleet that can be lost in an attack
 	fleetLossMinMultiplier = 0.3
+	// If fleet is much stronger this multipliers guarantee min damage
+	minDamageMultiplier = 0.35
 	// Multiplier to determine if attacker wins based on damage
 	winTresholdMultiplier = 1.2
+
+	minShipDefense = 1
 )
 
 type attackSetup struct {
@@ -54,6 +58,9 @@ func (s *Service) calcAttackResult(input attackSetup) (attackResult, error) {
 	damageToAttacker := defenderPower.attackPower * defenderPower.attackPower / (defenderPower.attackPower + attackerPower.defensePower)
 	damageToDefender := attackerPower.attackPower * attackerPower.attackPower / (attackerPower.attackPower + defenderPower.defensePower)
 
+	damageToAttacker = max(damageToAttacker, uint64(float64(defenderPower.attackPower)*minDamageMultiplier))
+	damageToDefender = max(damageToDefender, uint64(float64(attackerPower.attackPower)*minDamageMultiplier))
+
 	// Apply damage to fleets
 	updatedAttackerFleet, err := s.calcFleetLoss(input.attackerFleet, damageToAttacker, input.attackerResearches)
 	if err != nil {
@@ -93,29 +100,30 @@ func (s *Service) calcFleetLoss(fleet []models.FleetUnit, damage uint64, researc
 			return nil, fmt.Errorf("registry.GetFleetUnitStatsByID(): %w", err)
 		}
 
-		shipWeight := unitStats.Attack + unitStats.Defense
+		shipWeight := (unitStats.Attack + unitStats.Defense) * unit.Count
 		totalFleetWeight += shipWeight
 		precomputedResults = append(precomputedResults, precomputedFleetLoss{
 			unitID:       unit.ID,
 			shipWeight:   shipWeight,
-			shipDefense:  uint64(float64(unitStats.Defense*unit.Count) * researches.defenseBonus),
+			shipDefense:  max(minShipDefense, uint64(float64(unitStats.Defense)*researches.defenseBonus)),
 			damageToShip: 0,
 		})
 	}
 
 	// Calculate damage to each ship based on its weight in the fleet
 	for i := range precomputedResults {
-		precomputedResults[i].damageToShip = damage * precomputedResults[i].shipWeight / totalFleetWeight
+		precomputedResults[i].damageToShip = uint64(float64(damage) * float64(precomputedResults[i].shipWeight) / float64(totalFleetWeight))
 	}
 
 	// Calculate remaining ships after damage
 	updatedFleet := make([]models.FleetUnit, 0, len(fleet))
 	for i, fleetUnit := range fleet {
-		shipLossMultiplier := 1 - float32(precomputedResults[i].damageToShip)/float32(precomputedResults[i].shipDefense)
-		shipLossMultiplier = max(shipLossMultiplier, fleetLossMinMultiplier)
+		lostShips := min(precomputedResults[i].damageToShip/precomputedResults[i].shipDefense, fleetUnit.Count)
+		lostTreshold := uint64(float64(fleetUnit.Count) * float64(fleetLossMinMultiplier))
+		leftShips := max(fleetUnit.Count-lostShips, lostTreshold)
 		updatedFleet = append(updatedFleet, models.FleetUnit{
 			ID:    fleetUnit.ID,
-			Count: uint64(float32(fleetUnit.Count) * shipLossMultiplier),
+			Count: leftShips,
 		})
 	}
 

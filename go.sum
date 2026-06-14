@@ -7,6 +7,8 @@ github.com/galaxy-empire-team/bridge-api v0.0.0-20260502145035-4436c0f4f77b h1:K
 github.com/galaxy-empire-team/bridge-api v0.0.0-20260502145035-4436c0f4f77b/go.mod h1:oWQR/3RfhRrPhxHAjB5/PcVcsmzgNj4u9gDHgWAQlos=
 github.com/galaxy-empire-team/bridge-api v0.0.0-20260607161849-1d3a70cb253c h1:dRlN2U7h5aC/d/Bqp6QUYKVoE5FDTpFr9Wxv+HPl2dE=
 github.com/galaxy-empire-team/bridge-api v0.0.0-20260607161849-1d3a70cb253c/go.mod h1:WfaAfXlRotL7QgKHilQoUTwmKdTEX2e2rqEvXpP9eU4=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260613065130-beaa4c7fb6d4 h1:EgKLo1Tn+EUibJNkX6SfFUGDPe9oeX2fhPHXWkbvLkI=
+github.com/galaxy-empire-team/bridge-api v0.0.0-20260613065130-beaa4c7fb6d4/go.mod h1:WfaAfXlRotL7QgKHilQoUTwmKdTEX2e2rqEvXpP9eU4=
 github.com/go-logr/logr v1.4.3 h1:CjnDlHq8ikf6E492q6eKboGOC0T8CDaOvkHCIg8idEI=
 github.com/go-logr/logr v1.4.3/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
 github.com/go-logr/stdr v1.2.2 h1:hSWxHoqTgW2S2qGc0LTAI563KZ5YKYRhT3MFKZMbjag=
