@@ -34,6 +34,8 @@ type TxStorages interface {
 	SetPlanetFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
 	AddFleet(ctx context.Context, planetID uuid.UUID, fleet []models.FleetUnit) error
 	AddDebris(ctx context.Context, planetID uuid.UUID, debris models.Resources) error
+	AddMatter(ctx context.Context, planetID uuid.UUID, matter uint64) error
+	AddBoost(ctx context.Context, planetID uuid.UUID, boost models.Boost) error
 	GetDebrisForUpdate(ctx context.Context, planetID uuid.UUID) (models.Resources, error)
 	SetDebris(ctx context.Context, planetID uuid.UUID, debris models.Resources) error
 	GetBuildings(ctx context.Context, planetID uuid.UUID) ([]consts.BuildingID, error)

@@ -22,5 +22,10 @@ func toResources(r models.Resources) resources {
 		Metal:   r.Metal,
 		Crystal: r.Crystal,
 		Gas:     r.Gas,
+		Matter:  r.Matter,
+		Boost: boost{
+			ID:    r.Boost.ID,
+			Count: r.Boost.Count,
+		},
 	}
 }

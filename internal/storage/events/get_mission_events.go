@@ -76,6 +76,11 @@ func (r *EventsStorage) GetMissionEvents(ctx context.Context, missionEventsCount
 			Metal:   resources.Metal,
 			Crystal: resources.Crystal,
 			Gas:     resources.Gas,
+			Matter:  resources.Matter,
+			Boost: models.Boost{
+				ID:    resources.Boost.ID,
+				Count: resources.Boost.Count,
+			},
 		}
 
 		missionEvents = append(missionEvents, me)

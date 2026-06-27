@@ -29,4 +29,11 @@ type resources struct {
 	Metal   uint64 `json:"metal"`
 	Crystal uint64 `json:"crystal"`
 	Gas     uint64 `json:"gas"`
+	Matter  uint64 `json:"matter"`
+	Boost   boost  `json:"boost"`
+}
+
+type boost struct {
+	ID    consts.BoostID `json:"id"`
+	Count uint64         `json:"count"`
 }

@@ -25,9 +25,25 @@ func (s *Service) handleReturn(ctx context.Context, missionEvent models.MissionE
 		return fmt.Errorf("storage.AddFleet(): %w", err)
 	}
 
-	err = storage.AddResources(ctx, planetInfo.ID, missionEvent.Cargo)
-	if err != nil {
-		return fmt.Errorf("storage.AddResources(): %w", err)
+	if !missionEvent.Cargo.IsEmptyBase() {
+		err = storage.AddResources(ctx, planetInfo.ID, missionEvent.Cargo)
+		if err != nil {
+			return fmt.Errorf("storage.AddResources(): %w", err)
+		}
+	}
+
+	if missionEvent.Cargo.Matter > 0 {
+		err = storage.AddMatter(ctx, planetInfo.UserID, missionEvent.Cargo.Matter)
+		if err != nil {
+			return fmt.Errorf("storage.AddMatter(): %w", err)
+		}
+	}
+
+	if missionEvent.Cargo.Boost.ID != consts.BoostID(0) {
+		err = storage.AddBoost(ctx, planetInfo.UserID, missionEvent.Cargo.Boost)
+		if err != nil {
+			return fmt.Errorf("storage.AddBoost(): %w", err)
+		}
 	}
 
 	// --- create return notification ---

@@ -65,6 +65,11 @@ func (s *Service) Process(ctx context.Context, missionEventsCount uint16) error 
 				if err != nil {
 					return fmt.Errorf("s.handleTransport(): %w", err)
 				}
+			case consts.MissionTypeMist:
+				err := s.handleMist(ctx, missionEvent, txStorages)
+				if err != nil {
+					return fmt.Errorf("s.handleMist(): %w", err)
+				}
 			default:
 				s.logger.Warn("Unknown mission type", zap.Any("missionEvent", missionEvent))
 			}

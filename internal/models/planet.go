@@ -28,7 +28,18 @@ type Resources struct {
 	Metal     uint64
 	Crystal   uint64
 	Gas       uint64
+	Matter    uint64
+	Boost     Boost
 	UpdatedAt time.Time
+}
+
+func (r *Resources) IsEmptyBase() bool {
+	return r.Metal == 0 && r.Crystal == 0 && r.Gas == 0
+}
+
+type Boost struct {
+	ID    consts.BoostID
+	Count uint64
 }
 
 type Fleet struct {
